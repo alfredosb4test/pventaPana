@@ -1,0 +1,29 @@
+ALTER TABLE tbl_producto ADD COLUMN visible enum('0','1') DEFAULT '1' after activo; 
+
+
+todo listar_producto.php
+
+
+en crud_pventas.php
+
+	agregar la funcion 	activar_borrar_producto 	debajo de 	activar_desactivar_producto
+
+
+
+en conexion_class.php
+
+	function listar_producto
+
+	$where = " AND prod.visible='1' ";
+
+
+
+	Agregar la funcion	borrar_producto		despues de		activa_producto
+
+
+
+
+
+
+
+
