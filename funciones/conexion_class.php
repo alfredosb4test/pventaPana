@@ -1053,25 +1053,57 @@ class class_mysqli{
 /*******************************************************************************************************************/
 /*********************************************   Get Accesos Rapidos en Caja         *******************************/
 /*******************************************************************************************************************/
-	function get_accesos_rapidos($id_empresa, $id_sucursal){
-		$sql = "SELECT * FROM tbl_accrapid where activo = '1' AND id_empresa =".$id_empresa." AND id_sucursal =".$id_sucursal." ORDER BY nombre";
-		if ($result = $this->conn_mysqli->query($sql)) {
-			$lista_resultados = array();
-			$lista_resultados2 = array();
-			if($result->num_rows){	
-				while ($row = $result->fetch_assoc()) {
-					$lista_resultados['id_accrapid'] = $row["id_accrapid"];
-					$lista_resultados['id_prod'] = $row["id_prod"];
-					$lista_resultados['nombre'] = $row["nombre"];
-					$lista_resultados['img'] = $row["img"];
-					array_push($lista_resultados2, $lista_resultados);
-				}
-			}else
-			 return $lista_resultados = "no_data";			
-		}
-		return $lista_resultados2;		
-		$result->close();
+function get_accesos_rapidos($id_empresa, $id_sucursal){
+	$sql = "SELECT tbl_accrapid.id_prod, prod.nombre, prod.imagen FROM tbl_accrapid, tbl_producto prod
+			WHERE tbl_accrapid.id_prod = prod.codigo AND tbl_accrapid.activo = '1' AND tbl_accrapid.id_empresa =".$id_empresa." AND tbl_accrapid.id_sucursal =".$id_sucursal.
+			" ORDER BY prod.nombre";
+	if ($result = $this->conn_mysqli->query($sql)) {
+		$lista_resultados = array();
+		$lista_resultados2 = array();
+		if($result->num_rows){	
+			while ($row = $result->fetch_assoc()) { 
+				$lista_resultados['id_prod'] = $row["id_prod"];
+				$lista_resultados['nombre'] = $row["nombre"];
+				$lista_resultados['imagen'] = $row["imagen"];
+				array_push($lista_resultados2, $lista_resultados);
+			}
+		}else
+			return $lista_resultados = "no_data";			
 	}
+	return $lista_resultados2;		
+	$result->close();
+}
+
+/*******************************************************************************************************************/
+/*********************************************   Del Accesos Rapidos en Caja         *******************************/
+/*******************************************************************************************************************/
+function del_accesoCaja($id_prod){
+	$sql = "DELETE FROM tbl_accrapid WHERE id_prod = '".$id_prod."' LIMIT 1";
+
+	if ($result = $this->conn_mysqli->query($sql)) { 
+		if($this->conn_mysqli->affected_rows){	
+			return '{"status":"ok"}';	
+		}else
+			return '{"status":"error_sql"}';		
+	}	 	
+	$result->close();
+}
+function add_accesoCaja($id_prod, $id_empresa, $id_sucursal){
+	$activo = '1';
+	if($result = $this->conn_mysqli->prepare("INSERT INTO tbl_accrapid (id_empresa,id_sucursal,id_prod,activo) VALUES (?,?,?,?)")) {		 
+		if($result->bind_param("iiss",$id_empresa, $id_sucursal, $id_prod, $activo)){
+			if($result->execute()){
+				 return '{"status":"ok"}';
+			}else
+				return '{"status":"error_execute"}';
+		}else
+			return '{"status":"error_parametros"}';
+	}else
+		return '{"status":"error_sql"}';
+	 	
+	$result->close();
+}
+	
 /*******************************************************************************************************************/
 /*************************************************   LISTBOX   *****************************************************/
 /*******************************************************************************************************************/

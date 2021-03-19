@@ -886,8 +886,9 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='ventas_usuario'){
 						$clase = 'class="f_verde1_ventas f_resalta_verde "';
 
 					$precio = str_replace('$','',$precios[$key]);
-					$precioUni = $precio / $cantidades[$key];
-
+					$precioUni = $precio / $cantidades[$key] ;
+					if( is_nan($precioUni) )
+						$precioUni = 0;
 					if($_SESSION['g_nivel'] == "vendedor"){
 						$row["total_ganancia"]=0;
 						$ganancias = 0;
@@ -948,16 +949,28 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='ventas_usuario'){
 				$tabla_2 .= '</table>';	  				
 				$tbl_completa .= $tabla_1.$tabla_2.$tabla_3."<br>";	
 			}
-				$total_x_dia = number_format($total_x_dia,2);
-				echo '<table border="0" class="bright bleft btop font_22 f_amarillo t_rojo"  width="430" style="position:relative; float:right;">
-					  <tr>
-					  	<td align="right"><a onclick="excel()" class="hand">Excel</a></td>
-					    <td align="right">Total: <strong>$'.$total_ganancia_x_dia.'</strong></td>
-					   	<td align="right">Total: <strong>$'.$total_x_dia.'</strong></td>
-					  </tr>
-					  </table><br>
-					  '; //<a onclick="excel()">excel</a>
-				echo $tbl_completa.$tabla_xls;	// .$tabla_xls
+			$total_x_dia = number_format($total_x_dia,2);
+			$tabla_xls .= '
+			<tr>
+				<td bgcolor="#539ae6"></td>
+				<td bgcolor="#539ae6"></td>
+				<td bgcolor="#539ae6"></td>
+				<td bgcolor="#539ae6"></td>
+				<td bgcolor="#539ae6"></td>
+				<td bgcolor="#539ae6"></td>
+				<td bgcolor="#539ae6"></td>
+				<td bgcolor="#539ae6">$'.$total_ganancia_x_dia.'</td>
+				<td bgcolor="#539ae6">$'.$total_x_dia.'</td>
+			</tr>';
+			echo '<table border="0" class="bright bleft btop font_22 f_amarillo t_rojo"  width="430" style="position:relative; float:right;">
+					<tr>
+					<td align="right"><a onclick="excel()" class="hand">Excel</a></td>
+					<td align="right">Total: <strong>$'.$total_ganancia_x_dia.'</strong></td>
+					<td align="right">Total: <strong>$'.$total_x_dia.'</strong></td>
+					</tr>
+					</table><br>
+					'; //<a onclick="excel()">excel</a>
+			echo $tbl_completa.$tabla_xls;	// .$tabla_xls
 		}else{
 			echo '<div class="msg alerta_err"><strong>Sin Registros</strong></div>';
 		}
@@ -1382,6 +1395,28 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='pagos_sucursales'){
 /************************************************************************************************************************************/
 /***********************************************    REPORTE DE VENTAS   *************************************************************/
 /************************************************************************************************************************************/
+
+/************************************************************************************************************************************/
+/***********************************************    ACCESO RAPIDO CAJA   *************************************************************/
+/************************************************************************************************************************************/
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='del_accesoCaja'){
+	$conn = new class_mysqli();
+	$_POST = $conn->sanitize($_POST);
+	$id_prod = $_POST['id_prod'];  
+	//echo "OK: $id_pedido";
+	echo $conn->del_accesoCaja($id_prod);
+}if(array_key_exists("accion", $_POST) && $_POST['accion']=='add_accesoCaja'){
+	$conn = new class_mysqli();
+	$_POST = $conn->sanitize($_POST);
+	$id_prod = $_POST['id_prod'];  
+	$id_empresa = $_SESSION['g_id_empresa'];
+	$id_sucursal = $_SESSION['g_id_sucursal'];
+	echo $conn->add_accesoCaja($id_prod, $id_empresa, $id_sucursal);
+}
+/************************************************************************************************************************************/
+/***********************************************    ACCESO RAPIDO CAJA   *************************************************************/
+/************************************************************************************************************************************/
+
 
 if(array_key_exists("accion", $_POST) && $_POST['accion']=='ver_pedidos'){	
 	$conn = new class_mysqli();

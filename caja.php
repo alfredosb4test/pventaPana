@@ -94,7 +94,7 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
                         <td>
                             <img class="hand icoCaja" 
                                 onclick="buscar_producto(\''.$accesos_rapidos[$key]["id_prod"].'\')" 
-                                src="img_productos/'.$accesos_rapidos[$key]["img"].'"
+                                src="img_productos/'.$accesos_rapidos[$key]["imagen"].'"
                                 alt="'.$accesos_rapidos[$key]["nombre"].'"
                                 title="'.$accesos_rapidos[$key]["nombre"].'" >
                         </td>

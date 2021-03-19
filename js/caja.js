@@ -151,7 +151,7 @@ $(document).ready(function(e) {
 	$("#txt_cj_nombre").autocomplete({
 		source: "crud_pventas.php?accion=autocompleta_producto_caja",			
 		//appendTo: '#menu-container',
-		minLength: 4,						
+		minLength: 3,						
 		select: function (event, ui) {				
 			buscar_producto(ui.item.codigo);
 		    $('#txt_cj_nombre').attr('value','').focus();						

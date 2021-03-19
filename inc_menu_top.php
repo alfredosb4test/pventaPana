@@ -107,6 +107,9 @@ $(document).ready(function(e) {
 		}
 		if(this.id == 'btn_trasferencias'){
 			ir_menu('listar_trasferencias.php','btn_trasferencias');
+		}	
+		if(this.id == 'btn_accesoRapido'){
+			ir_menu('accesoRapido.php','btn_accesoRapido');
 		}				
 		
 	}
@@ -250,6 +253,7 @@ if($_SESSION['g_nivel']== "admin"): ?>
                <li class='has-sub'><a href='#'><span>Ventas</span></a>
                   <ul>
                      <li class='has-sub btn_menu' id="btn_caja_ventas"><a href='#'><span>Caja</span></a></li>
+                     <li class='has-sub btn_menu' id="btn_accesoRapido"><a href='#'><span>Acceso Rapido Caja</span></a></li>					 
                      <li class='has-sub btn_menu' id="btn_devoluciones"><a href='#'><span>Devoluciones</span></a></li>
                      <li class='has-sub btn_menu' id="btn_trasferencias"><a href='#'><span>Trasferencias</span></a></li>
                   </ul>
