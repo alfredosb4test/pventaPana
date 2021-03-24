@@ -1413,6 +1413,26 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='del_accesoCaja'){
 	$id_sucursal = $_SESSION['g_id_sucursal'];
 	echo $conn->add_accesoCaja($id_prod, $id_empresa, $id_sucursal);
 }
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='orden_accesos_caja'){
+	$conn = new class_mysqli();
+	$array_ids =  explode(',', $_POST['array_id']);
+	$ids =  "";
+	$sql = "UPDATE tbl_accrapid SET orden = CASE id_prod "; 
+	foreach ($array_ids as $key => $id) {     
+		$sql .= sprintf("WHEN '%s' THEN %d ", $id, $key); 
+		$ids .= "'".$id."',";
+	} 
+	$ids = rtrim($ids, ",");
+	$sql .= "END WHERE id_prod IN ($ids)";
+	// echo $sql;
+	// exit;
+	if($result = $conn->conn_mysqli->query($sql) ){
+		if($conn->conn_mysqli->affected_rows){	
+			echo '{"status":"ok"}';	
+		}else
+			echo '{"status":"error_sql"}';	
+	}
+}
 /************************************************************************************************************************************/
 /***********************************************    ACCESO RAPIDO CAJA   *************************************************************/
 /************************************************************************************************************************************/

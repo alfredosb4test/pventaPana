@@ -1056,13 +1056,20 @@ class class_mysqli{
 function get_accesos_rapidos($id_empresa, $id_sucursal){
 	$sql = "SELECT tbl_accrapid.id_prod, prod.nombre, prod.imagen FROM tbl_accrapid, tbl_producto prod
 			WHERE tbl_accrapid.id_prod = prod.codigo AND tbl_accrapid.activo = '1' AND tbl_accrapid.id_empresa =".$id_empresa." AND tbl_accrapid.id_sucursal =".$id_sucursal.
-			" ORDER BY prod.nombre";
+			" ORDER BY tbl_accrapid.orden";
 	if ($result = $this->conn_mysqli->query($sql)) {
 		$lista_resultados = array();
 		$lista_resultados2 = array();
 		if($result->num_rows){	
 			while ($row = $result->fetch_assoc()) { 
 				$lista_resultados['id_prod'] = $row["id_prod"];
+				$lista_resultados['nombreCompleto'] = $row["nombre"];
+				// cortar el nombre si excede
+				if( strlen( $row["nombre"] ) >= 30 ){
+					$row["nombre"] = substr($row["nombre"], 0, 27) . '...';
+					echo $text;
+				}
+
 				$lista_resultados['nombre'] = $row["nombre"];
 				$lista_resultados['imagen'] = $row["imagen"];
 				array_push($lista_resultados2, $lista_resultados);
@@ -1090,8 +1097,13 @@ function del_accesoCaja($id_prod){
 }
 function add_accesoCaja($id_prod, $id_empresa, $id_sucursal){
 	$activo = '1';
-	if($result = $this->conn_mysqli->prepare("INSERT INTO tbl_accrapid (id_empresa,id_sucursal,id_prod,activo) VALUES (?,?,?,?)")) {		 
-		if($result->bind_param("iiss",$id_empresa, $id_sucursal, $id_prod, $activo)){
+	$sqlCount = "SELECT MAX(orden) + 1 as total FROM tbl_accrapid";
+	$result = $this->conn_mysqli->query($sqlCount);
+	$row = $result->fetch_assoc();
+	$total = $row['total'];
+
+	if($result = $this->conn_mysqli->prepare("INSERT INTO tbl_accrapid (id_empresa,id_sucursal,orden, id_prod,activo) VALUES (?,?,?,?,?)")) {		 
+		if($result->bind_param("iiiss",$id_empresa, $id_sucursal, $total, $id_prod, $activo)){
 			if($result->execute()){
 				 return '{"status":"ok"}';
 			}else

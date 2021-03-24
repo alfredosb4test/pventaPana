@@ -812,9 +812,23 @@ function buscar_producto($codigo){
 		  
 		  // si el nombre del prod excede de 48 caracteres se ajusta
 		  if(obj.nombre.length >= 48)
-		  	$item_nombre =  '<div class="item_nombre f_left"><img src="images/borrar.png" width="25" height="25" onclick="del_item(\''+obj.codigo+'\')" class="hand" style="top: 5px; position: relative;"><span id="cantidad0_0'+obj.codigo+'">('+$cantidadMostrar+') \t '+obj.nombre+'</span></div>';
+		  	$item_nombre =  '<div class="item_nombre f_left">'+
+				'<div style="top: 5px; position: relative; float:left; width: 10%;">'+
+					'<img src="images/borrar.png" width="25" height="25" onclick="del_item(\''+obj.codigo+'\')" class="hand" >'+
+				'</div>'+
+				'<div style="top: 5px; position: relative; float:left; width: 89%;">	'+  
+					'<span id="cantidad0_0'+obj.codigo+'">('+$cantidadMostrar+') \t '+obj.nombre+'</span>'+
+				'</div>'+
+			'</div>';
 		  else
-		  	$item_nombre =  '<div class="item_nombre_corto f_left"><img src="images/borrar.png" width="25" height="25" onclick="del_item(\''+obj.codigo+'\')" class="hand" style="top: 5px; position: relative;"><span id="cantidad0_0'+obj.codigo+'">('+$cantidadMostrar+') \t '+obj.nombre+'</span></div>';
+		  	$item_nombre =  '<div class="item_nombre_corto f_left">'+
+					'<div style="top: 5px; position: relative; float:left; width: 10%;">'+
+						'<img src="images/borrar.png" width="25" height="25" onclick="del_item(\''+obj.codigo+'\')" class="hand" >'+
+					'</div>'+
+					'<div style="top: 5px; position: relative; float:left; width: 89%;">	'+  
+						'<span id="cantidad0_0'+obj.codigo+'">('+$cantidadMostrar+') \t '+obj.nombre+'</span>'+
+					'</div>'+
+				'</div>';
 		  
 		  // almacena la fila para el ITEM	
 

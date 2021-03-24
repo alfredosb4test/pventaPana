@@ -5,8 +5,48 @@ $conn = new class_mysqli();
 $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESSION['g_id_sucursal'] );
 ?> 
 
+
+<style>
+  #sortable { list-style-type: none; margin: 0; padding: 0; width: 98%; clear: both;}
+  #sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 110px; font-size: 12px; text-align: center; }
+</style>
+
 <script type="text/javascript">
 $(document).ready(function(e) {  
+    $( "#sortable" ).sortable({
+         
+        update: function (event, ui) {
+            
+            $array_id =  $(this).sortable('toArray').toString();
+            console.log( $array_id );
+            
+            $.ajax({
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded", 
+                url: "crud_pventas.php",
+                data: "accion=orden_accesos_caja&array_id="+$array_id,
+                beforeSend:function(){/* $("#ajax_respuesta").html($load); */},	 
+                success: function(datos){ 
+                console.log(datos);
+                return;   
+                    var obj = jQuery.parseJSON(datos);	
+                    $("#ajax_respuesta").empty();		
+                    if(obj.status == "ok"){
+                        console.log( 'OK' );
+                    }	 			  
+                    if(obj.status == "error_sql"){
+                        console.log( 'error_sql' );
+                    } 	
+                },
+                timeout:90000,
+                error: function(){ 					
+                        $("#ajax_respuesta").html('<div class="msg alerta_err">Problemas con el Servidor</div>');
+                }	   
+            });
+        }
+    });
+    $( "#sortable" ).disableSelection();
+
     $("#txt_cj_nombre").autocomplete({
 		source: "crud_pventas.php?accion=autocompleta_producto_caja",			
 		//appendTo: '#menu-container',
@@ -20,6 +60,9 @@ $(document).ready(function(e) {
 function select_producto($id_prod, $imagen){
     $("#img_prod").attr('src', 'img_productos/' + $imagen);
     $("#img_prod").attr('id_prod', $id_prod);
+    $txt = $("#"+$id_prod).children().eq(0).text();
+    $("#cont_txtNombreProd").html($txt)
+    console.log($txt)
 }
 function add_prod($id_prod){
     if( $id_prod === undefined || $id_prod == '' )
@@ -32,7 +75,7 @@ function add_prod($id_prod){
         data: "accion=add_accesoCaja&id_prod="+$id_prod,
         beforeSend:function(){/* $("#ajax_respuesta").html($load); */},	 
         success: function(datos){ 
-        //alert(datos)   
+            //console.log('success', datos)   
             var obj = jQuery.parseJSON(datos);	
             $("#ajax_respuesta").empty();		
             if(obj.status == "ok"){
@@ -70,10 +113,11 @@ function del_prod(){
             var obj = jQuery.parseJSON(datos);	
             $("#ajax_respuesta").empty();	
             if(obj.status == "ok"){
-                $("#img_prod").attr('id_prod', '');
-                $("#img_prod").attr('src', 'images/cantidad_del.png');
-                $("#"+$id_prod).remove();
-                $("#ajax_x_producto").html('<div align="center" class="msg alerta_ok t_verde_fuerte">Eliminado</div>');
+                $("#btn_accesoRapido").click();
+                // $("#img_prod").attr('id_prod', '');
+                // $("#img_prod").attr('src', 'images/cantidad_del.png');
+                // $("#"+$id_prod).remove();
+                // $("#ajax_x_producto").html('<div align="center" class="msg alerta_ok t_verde_fuerte">Eliminado</div>');
                 
             }	 			  
             if(obj.status == "error_sql"){
@@ -103,6 +147,9 @@ function del_prod(){
     </div>
     <br>
     <div id="cont_prod">
+        <div id="cont_txtNombreProd" style="margin-left:7px; width:90%; height:50px;">
+
+        </div>
         <img id="img_prod" class="icoCaja" src="images/cantidad_del.png" style="margin-left:7px">
     </div>
     <div class="button_cobrar" onclick="del_prod()" style="margin-left:9px; width:73px; height:30px; font-size:12px">
@@ -119,27 +166,39 @@ function del_prod(){
     <br>
     <input class="text_box" id="txt_cj_nombre" type="text" placeholder="Nombre del Articulo" style="width:250px;" required>
 </div>
-<div id="cont_productos" style="position: relative; width:68%;  float:left; margin:50px 0 0 5px;">
-<?php
+<div id="cont_productosList" style="position: relative; width:68%;  float:left; margin:50px 0 0 5px;">
+
+    
+    <?php
             
     foreach($accesos_rapidos as $key=>$prod){
         // echo  $accesos_rapidos[$key]['nombre']."<br>";
-        $tabla .= '<table id="'.$accesos_rapidos[$key]["id_prod"].'" style="position:relative; float:left;" border="0" cellpadding="1" cellspacing="0" width="65">';
-
-        $tabla .= 
-            '<tr>
-                <td>
+        $li .= '<li class="ui-state-default"  id="'.$accesos_rapidos[$key]["id_prod"].'">'.
+                    '<span class="hide nombreCompletoItem">'.$accesos_rapidos[$key]["nombreCompleto"].'</span>
+                    <span class="nombreItem">'.$accesos_rapidos[$key]["nombre"].'</span>
                     <img class="hand icoCaja" 
-                        onclick="select_producto(\''.$accesos_rapidos[$key]["id_prod"].'\', \''.$accesos_rapidos[$key]["imagen"].'\')" 
-                        src="img_productos/'.$accesos_rapidos[$key]["imagen"].'"
-                        alt="'.$accesos_rapidos[$key]["nombre"].'"
-                        title="'.$accesos_rapidos[$key]["nombre"].'" >
-                </td>
-            </tr>';
-        $tabla .= "</table>";    
+                    onclick="select_producto(\''.$accesos_rapidos[$key]["id_prod"].'\', \''.$accesos_rapidos[$key]["imagen"].'\')" 
+                    src="img_productos/'.$accesos_rapidos[$key]["imagen"].'">'.
+                '</li>';
+        // $tabla .= '<table id="'.$accesos_rapidos[$key]["id_prod"].'" style="position:relative; float:left;" border="0" cellpadding="1" cellspacing="0" width="65">';
+        // $tabla .= 
+        //     '<tr>
+        //         <td>
+        //             <img class="hand icoCaja" 
+        //                 onclick="select_producto(\''.$accesos_rapidos[$key]["id_prod"].'\', \''.$accesos_rapidos[$key]["imagen"].'\')" 
+        //                 src="img_productos/'.$accesos_rapidos[$key]["imagen"].'"
+        //                 alt="'.$accesos_rapidos[$key]["nombre"].'"
+        //                 title="'.$accesos_rapidos[$key]["nombre"].'" >
+        //         </td>
+        //     </tr>';
+        // $tabla .= "</table>";    
     }
-    echo $tabla;	
-?>
+    //echo $tabla;	
+    ?>
+     
+    <ul id="sortable">
+        <?=$li;?>
+    </ul>
 </div> 
 
  
