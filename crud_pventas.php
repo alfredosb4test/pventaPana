@@ -1947,6 +1947,26 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='activar_cantidades')
 	$estatus = $_POST['rdo_estatus']; 
 	$_SESSION['activar_cantidades'] = $estatus;
 }
+// activar o desactivar la vista de iconos de productos en caja
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='estatus_accesos'){	
+	$conn = new class_mysqli();
+	$estatus = $_POST['estatus']; 
+	$id_empresa = $_SESSION['g_id_empresa'];
+	$id_sucursal = $_SESSION['g_id_sucursal'];
+	$sql = "UPDATE tbl_sucursal_datos SET accesos_caja ='$estatus' WHERE id_empresa = $id_empresa AND id_sucursal = $id_sucursal"; 
+	
+	if($result = $conn->conn_mysqli->query($sql)){
+		echo '{"status":"ok_update"}';
+	}else{
+		echo '{"status":"no_update"}';
+	}
+}
+// Actualizar la variable accesos_caja de $_SESSION 
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='accesos_caja'){	
+	$conn = new class_mysqli();
+	$estatus = $_POST['rdo_estatus']; 
+	$_SESSION['accesos_caja'] = $estatus;
+}
 if(array_key_exists("accion", $_POST) && $_POST['accion']=='backup'){
 	//echo "backup";
 	$conn = new class_mysqli();

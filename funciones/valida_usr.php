@@ -79,6 +79,7 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='valida_usr'){
 			$_SESSION['g_suc_tel1']=$conn->datos_empresa["suc_tel1"];
 			$_SESSION['g_suc_tel2']=$conn->datos_empresa["suc_tel2"];
 			$_SESSION['activar_cantidades']=$conn->datos_empresa["activar_cantidades"];
+			$_SESSION['accesos_caja']=$conn->datos_empresa["accesos_caja"];
 			echo '{"tipo":"registrado"
 					,"nombre":"'.$row_r['Nombre'].'"
 					,"IVA":"'.$conn->datos_empresa["iva"].'"

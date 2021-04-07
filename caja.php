@@ -1,6 +1,6 @@
 <?php
 session_start();
-//print_r($_SESSION);
+// print_r($_SESSION);
 include('funciones/conexion_class.php');
 $conn = new class_mysqli();
  
@@ -55,7 +55,7 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
     top: auto;
   }
   </style>
-<script src="js/caja.js"></script>
+<script src="js/caja.min.js"></script>
 <table align="center" width="100%" border="0" id="tbl_buscar_producto">
   <tr>
       <td align="left" width="260" >
@@ -79,10 +79,33 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
 <div id="pendientes_prod"></div>
 <div style="clear: both;">
     <div>
-        <div id="ajax_items_add"></div>
+    <?php    
+        if( $_SESSION['accesos_caja']  == 1){
+            $stylesItems = ' style="
+                background-color: #FFF;
+                border:#003 2px solid;
+                overflow-y: auto;  	
+                width: 55%; 
+                float: left;"';
+            $stylesAccesos = ' style="
+                background-color: #FFF;
+                border:#003 0px solid;
+                overflow-y: auto;  	
+                width: 44%;"';
+        }else{
+            $stylesItems = ' style="
+                background-color: #FFF;
+                border:#003 2px solid;
+                overflow-y: auto;  	
+                width: 99.5%; 
+                float: left	;"';
+            $stylesAccesos = ' style="display: none;"';  
+        }
+    ?>    
+        <div id="ajax_items_add" <?=$stylesItems;?>></div>
     </div>
     <div>
-        <div id="btn_productos">
+        <div id="btn_productos" <?=$stylesAccesos;?> >
             <?php
             
             foreach($accesos_rapidos as $key=>$prod){

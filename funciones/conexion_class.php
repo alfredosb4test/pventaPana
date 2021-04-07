@@ -93,7 +93,7 @@ class class_mysqli{
 	function getDatos_basicos($idEmpresa, $id_sucursal){
 		$sql = "SELECT tbl_empresa.*, tbl_sucursal.id_sucursal,tbl_sucursal.sucursal, 
 												suc_datos.direccion as suc_dir, suc_datos.tel1 as suc_tel1, suc_datos.tel2 as suc_tel2, 
-												suc_datos.activar_cantidades
+												suc_datos.activar_cantidades, suc_datos.accesos_caja
 												FROM tbl_empresa, tbl_sucursal, tbl_sucursal_datos as suc_datos 
 												WHERE tbl_sucursal.id_sucursal = $id_sucursal AND 
 												suc_datos.id_sucursal = $id_sucursal AND 
@@ -116,6 +116,7 @@ class class_mysqli{
 							$this->datos_empresa['suc_tel1']		= $row["suc_tel1"];
 							$this->datos_empresa['suc_tel2']		= $row["suc_tel2"];
 							$this->datos_empresa['activar_cantidades']		= $row["activar_cantidades"];
+							$this->datos_empresa['accesos_caja']		= $row["accesos_caja"];
 						}	 		
 						return 'existe';						
 					}else

@@ -3,6 +3,7 @@ session_start();
 include('funciones/conexion_class.php');
 $conn = new class_mysqli();
 $activar_cantidades = $_SESSION['activar_cantidades'];
+$activar_accesos = $_SESSION['accesos_caja'];
 ?>
 
 
@@ -229,6 +230,39 @@ $(document).ready(function(e) {
 		});
 	})	
 
+		// Check Activar Acceos rapidos caja
+		$(".rdo_estatus_accesos").change(function(){		
+		$rdo_estatus = $(".rdo_estatus_accesos:radio[checked='checked']").val();
+		//alert("OK"+$rdo_estatus)					
+		$param = "accion=estatus_accesos&estatus="+$rdo_estatus;
+		
+		if($rdo_estatus == '') return;
+		$.ajax({
+		 type: "POST",
+		 contentType: "application/x-www-form-urlencoded", 
+		 url: 'crud_pventas.php',
+		 data: $param,
+		 beforeSend:function(){ /* $("#ajax_respuesta").html($load); */ },	 
+		 success: function(datos){ 
+		 	//alert(datos)
+ 			var obj = jQuery.parseJSON(datos);	
+ 			if(obj.status == "ok_update"){
+				$.post( "crud_pventas.php", { rdo_estatus: $rdo_estatus, accion: "accesos_caja" })
+				  .done(function( data ) {
+					$("#btn_caja_ventas").click(); // clic en el menu caja 
+				  }); 				
+ 				
+ 			}
+			if(obj.status == "no_update"){
+				 $("#ajax_dvlcion_err").html('<div class="msg alerta_err">Problemas con el SQL</div>');
+			}	 										 							 			
+		 },
+		 timeout:90000,
+		 error: function(){ 					
+				$("#ajax_respuesta").html('Problemas con el servidor intente de nuevo.');
+			}	   
+		});
+	})	
 	
 	$("#lst_sucursales").selectmenu({
 		change: function( event, data ) {
@@ -365,16 +399,16 @@ function key_buscar_producto (elEvento, e) {
     </div> 
                        
     <div style="position:relative;float:left; "> 
-    	<div class="" style="position: relative; margin: 1px 0 0 5px;  width:190px;" align="center">Tipo de Busqueda</div> 
+    	<div class="" style="position: relative; margin: 1px 0 0 5px;  width:160px;" align="center">Tipo de Busqueda</div> 
         <div class="div_redondo_azul" style="position: relative; width:290px; height:40px;float:left;">
             <table border="0" width="100%">
                 <tr>                         
                     <td width="30%">
-                    	<button class="" type="button" id="btn_filtro" style="width:85px; padding:0">Filtro</button> 
+                    	<button class="" type="button" id="btn_filtro" style="width:72; padding:0">Filtro</button> 
 
-                        <button class="" type="button" id="btn_ventas_realizadas" style="width:85px; padding:0">Ventas</button> 
+                        <button class="" type="button" id="btn_ventas_realizadas" style="width:72; padding:0">Ventas</button> 
                          
-                        <button class="" type="button" id="btn_pagos_realizados" style="width:85px;">Pagos</button>  
+                        <button class="" type="button" id="btn_pagos_realizados" style="width:72;">Pagos</button>  
                     </td>  
                 </tr>
             </table>
@@ -384,45 +418,48 @@ function key_buscar_producto (elEvento, e) {
 
     <div style="position:relative;float:left;"> 
     	<div class="" style="position: relative; margin: 1px 0 0 5px;  width:100px; " align="center">Empleado</div> 
-        <div class="div_redondo_azul" style="position: relative; width:230px; height:40px;float:left;">
-            <div class="lst_provedor" style="display: ; position: relative; margin:-3px 0 0 10px; ">
-            <table>
-            <tr>
-            	<td>
-                <select id='lst_usuarios' name='lst_usuarios' style="width:140px; " >
-                    <?php echo $conn->lst_usuarios('tbl_usuarios', 'NumEmp', 'Nombre', '', '',$_SESSION['g_id_empresa'], $_SESSION['g_sucursales']); ?> 
-                </select>
-                </td>
-                <td>
-                <input type="radio" name="rdo_estatus" class="rdo_estatus" value="ventas" checked="checked" />Ventas
-                <input type="radio" name="rdo_estatus" class="rdo_estatus" value="pagos" />Pagos                
-            	</td>
-            </tr>
-            </table>    
-            </div>    
+        <div class="div_redondo_azul" style="position: relative; width:467px; height:40px;float:left;">
+            <div class="lst_provedor" style="display: ; position: relative; margin:-3px 0 0 10px;float:left;">
+				<table width="220">
+				<tr>
+					<td>
+					<select id='lst_usuarios' name='lst_usuarios' style="width:140px; " >
+						<?php echo $conn->lst_usuarios('tbl_usuarios', 'NumEmp', 'Nombre', '', '',$_SESSION['g_id_empresa'], $_SESSION['g_sucursales']); ?> 
+					</select>
+					</td>
+					<td>
+					<input type="radio" name="rdo_estatus" class="rdo_estatus" value="ventas" checked="checked" />Ventas
+					<input type="radio" name="rdo_estatus" class="rdo_estatus" value="pagos" />Pagos                
+					</td>
+				</tr>
+				</table>    
+            </div>   
+			
+			
+			<div class="lst_provedor" style="display: ; position: relative; margin:-3px 0 0 14px;float:left;">
+				<table width="220">
+				<tr>
+					<td>
+					<select id='lst_sucursales' name='lst_sucursales' style="width:140px;" >
+						<?php echo $conn->lst_sucursales_admin('tbl_sucursal', 'id_sucursal', 'sucursal', '', '', $_SESSION['g_id_empresa'],$_SESSION['g_sucursales']); ?> 
+					</select>
+					</td>
+					<td>
+					<input type="radio" name="rdo_estatus_suc" class="rdo_estatus_suc" value="ventas" checked="checked" />Ventas
+					<input type="radio" name="rdo_estatus_suc" class="rdo_estatus_suc" value="pagos" />Pagos                
+					</td>
+				</tr>
+				</table>    
+            </div> 
         </div>
     </div> 
 
-    <div style="position:relative;float:left;"> 
+    <!-- <div style="position:relative;float:left;"> 
     	<div class="" style="position: relative; margin: 1px 0 0 15px;  width:100px; " align="center">Sucursales</div> 
         <div class="div_redondo_azul" style="position: relative; width:270px; height:40px;float:left;">
-            <div class="lst_provedor" style="display: ; position: relative; margin:-3px 0 0 14px; ">
-            <table>
-            <tr>
-            	<td>
-                <select id='lst_sucursales' name='lst_sucursales' style="width:160px;" >
-                    <?php echo $conn->lst_sucursales_admin('tbl_sucursal', 'id_sucursal', 'sucursal', '', '', $_SESSION['g_id_empresa'],$_SESSION['g_sucursales']); ?> 
-                </select>
-                </td>
-                <td>
-                <input type="radio" name="rdo_estatus_suc" class="rdo_estatus_suc" value="ventas" checked="checked" />Ventas
-                <input type="radio" name="rdo_estatus_suc" class="rdo_estatus_suc" value="pagos" />Pagos                
-            	</td>
-            </tr>
-            </table>    
-            </div>    
+   
         </div>
-    </div> 
+    </div>  -->
 
 	<div style="position:relative;float:left;"> 
 	    	<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Activar Cantidades</div> 
@@ -438,6 +475,25 @@ function key_buscar_producto (elEvento, e) {
 	                <td>	                
 	                <input type="radio" name="rdo_estatus_catidades" class="rdo_estatus_catidades" value="0"
 	                	<?php echo (!$activar_cantidades) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
+	            	</td>
+	            </tr>
+	            </table>	            	
+	    	</div>
+	</div> 
+	<div style="position:relative;float:left;"> 
+	    	<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Activar Accesos</div> 
+	    	<div class="div_redondo_azul" style="position: relative; width:140px; height:40px;float:left;">
+	            <table>
+	            <tr>                
+	                <td>
+	                <input type="radio" name="rdo_estatus_accesos" class="rdo_estatus_accesos" value="1" 
+	                	<?php echo ($activar_accesos) ? $check = 'checked="checked"' : ''; ?> />Activo
+	            	</td>
+	            </tr>	                
+	            <tr>                
+	                <td>	                
+	                <input type="radio" name="rdo_estatus_accesos" class="rdo_estatus_accesos" value="0"
+	                	<?php echo (!$activar_accesos) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
 	            	</td>
 	            </tr>
 	            </table>	            	

@@ -116,6 +116,7 @@ $(document).ready(function(e) {
 	$('.btn_menu').click($btn_click);
 	
 	function ir_menu($php,$accion){
+		//console.log($accion)
 			$.ajax({
 			 type: "POST",
 			 contentType: "application/x-www-form-urlencoded",
