@@ -116,7 +116,7 @@ $(document).ready(function(e) {
 	$('.btn_menu').click($btn_click);
 	
 	function ir_menu($php,$accion){
-		//console.log($accion)
+		console.log($accion)
 			$.ajax({
 			 type: "POST",
 			 contentType: "application/x-www-form-urlencoded",
@@ -287,6 +287,75 @@ if($_SESSION['g_nivel']== "admin"): ?>
     </div>
 <?php 
 endif;
+
+
+if($_SESSION['g_nivel']== "supervisor"):?>
+	<div id="bar_menu" style="position:relative; width:85%; height:28px; float:left; top:1px; display:none;">
+			<div id='cssmenu'>
+			<ul>
+			   <li class='has-sub btn_menu' id="btn_caja"><a href='#'><span>Caja</span></a></li>    
+			   <li class='has-sub'><a href='#'><span>Productos y Proveedores</span></a>
+				  <ul>
+				  	 <li class='has-sub hide btn_menu' id="btn_nuevo_prod"><a href='#'><span>Nuevo Producto</span></a></li>
+					 <li class='has-sub btn_menu' id="btn_listar_prod"><a href='#'><span>Listado de Productos</span></a></li>
+					 <li class='has-sub btn_menu' id="btn_prod_unidades"><a href='#'><span>Producto a Unidades</span></a></li>
+					 <li class='has-sub btn_menu' id="btn_listar_stock_pastelero"><a href='#'><span>Pasteles Pendientes de Realizar</span></a></li> 
+				  </ul>
+			   </li>
+			   <li class='has-sub'><a href='#'><span>Pedidos</span></a>
+				  <ul>
+					 <li class='has-sub btn_menu' id="btn_pedidos"><a href='#'><span>Nuevo Pedido</span></a></li>
+					 <li class='has-sub btn_menu' id="btn_listar_pedido"><a href='#'><span>Listado de Pedidos</span></a></li>
+				  </ul>
+			   </li>  
+			   
+<!--                   <li class='has-sub'><a href='#'><span>Usuarios</span></a>
+				  <ul>
+					 <li class='has-sub'><a href='#'><span>Nuevo Usuarios</span></a></li>
+					 <li class='has-sub'><a href='#'><span>Listado de Usuarios</span></a></li>
+				  </ul>
+			   </li>-->
+			   <li class='has-sub'><a href='#'><span>Clientes</span></a>
+				  <ul>
+					 <li class='has-sub btn_menu' id="btn_nuevo_cliente"><a href='#'><span>Nuevo Clientes</span></a></li>
+					 <li class='has-sub btn_menu' id="btn_listar_cliente"><a href='#'><span>Listado de Clientes</span></a></li>
+				  </ul>
+			   </li> 
+			   <li class='has-sub btn_menu' id="btn_devoluciones"><a href='#'><span>Devoluciones</span></a></li>                                   
+			</ul>
+			
+			</div>
+
+
+
+
+	 </div>	
+	 <div id="" style="position: relative; float: right; margin:18px 16px 0 0px;width:10%; background-color:; ">
+		 <div id="cont_btn" style="position:relative; float:right; width:86px;">
+			<div style="width:28px; height:28px;float:left;" class="boton" id="font_size_mas">
+				<img src="images/btn_font_mas.png" border="0" style="position: absolute;">
+			</div> 
+			<div style="width:28px; height:28px;float:left;" class="boton" id="font_size_menos">
+				<img src="images/btn_font_menos.png" border="0" style="position: absolute;">
+			</div>                     	 	
+			<div style="width:28px; height:28px;float:left;" class="boton" id="cerrar_sistema">
+				<img src="images/cerrar_1.png" border="0" style="position: absolute;" >
+			</div>
+		</div>
+		<div   style="position:absolute;  color: #FF0; margin:-17px 0 0 -170px; font-size:12px; width:300px;">
+			<table border="0" width="100%">
+				<tr>
+					<td align="right">
+						Usuario: <span class="t_verde2 t_italic"><?= $_SESSION['g_nombre']; ?></span>
+					</td>
+				</tr>		
+			</table>
+		</div>       
+	 </div>
+<?php 
+endif;
+
+
 if($_SESSION['g_nivel']== "vendedor"):?>
 		<div id="bar_menu" style="position:relative; width:85%; height:28px; float:left; top:1px; display:none;">
                 <div id='cssmenu'>

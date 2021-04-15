@@ -93,7 +93,7 @@ class class_mysqli{
 	function getDatos_basicos($idEmpresa, $id_sucursal){
 		$sql = "SELECT tbl_empresa.*, tbl_sucursal.id_sucursal,tbl_sucursal.sucursal, 
 												suc_datos.direccion as suc_dir, suc_datos.tel1 as suc_tel1, suc_datos.tel2 as suc_tel2, 
-												suc_datos.activar_cantidades, suc_datos.accesos_caja
+												suc_datos.activar_cantidades, suc_datos.accesos_caja, suc_datos.txt_focus_caja
 												FROM tbl_empresa, tbl_sucursal, tbl_sucursal_datos as suc_datos 
 												WHERE tbl_sucursal.id_sucursal = $id_sucursal AND 
 												suc_datos.id_sucursal = $id_sucursal AND 
@@ -117,6 +117,7 @@ class class_mysqli{
 							$this->datos_empresa['suc_tel2']		= $row["suc_tel2"];
 							$this->datos_empresa['activar_cantidades']		= $row["activar_cantidades"];
 							$this->datos_empresa['accesos_caja']		= $row["accesos_caja"];
+							$this->datos_empresa['txt_focus_caja']		= $row["txt_focus_caja"];
 						}	 		
 						return 'existe';						
 					}else
@@ -971,6 +972,7 @@ class class_mysqli{
 					$lista_resultados['NumEmp'][$row["NumEmp"]] = $row["NumEmp"];
 					$lista_resultados['Nombre'][$row["NumEmp"]] = $row["Nombre"];
 					$lista_resultados['sucursal'][$row["NumEmp"]] = $row["sucursal"];
+					$lista_resultados['nivel'][$row["NumEmp"]] = $row["nivel"];
 					$lista_resultados['registrado'][$row["NumEmp"]] = $row["registrado"]; 
 				}
 			}else
@@ -979,19 +981,36 @@ class class_mysqli{
 		return $lista_resultados;		
 		$result->close();		
 	}
-	function edit_adm_usuario($id, $password){
+	function edit_adm_usuario($id, $password, $lst_rol){
 		//$fecha = date('Y-m-d H:i:s');
-		$password = "pwd|".md5($password);
-		if($result = $this->conn_mysqli->prepare("UPDATE tbl_usuarios SET password=? WHERE NumEmp = ?")) {		 
-			if($result->bind_param("si", $password, $id)){
-				if($result->execute()){
-				 	return '{"tipo":"cliente_update"}';
+		if( empty($password) ){
+			$sql = "UPDATE tbl_usuarios SET nivel=? WHERE NumEmp = ?";
+			if($result = $this->conn_mysqli->prepare($sql)) {		 
+				if($result->bind_param("si", $lst_rol, $id)){
+					if($result->execute()){
+						return '{"tipo":"cliente_update"}';
+					}else
+						return '{"tipo":"error_execute"}';
 				}else
-					return '{"tipo":"error_execute"}';
+					return '{"tipo":"error_parametros"}';
 			}else
-				return '{"tipo":"error_parametros"}';
-		}else
-			return '{"tipo":"error_sql"}';
+				return '{"tipo":"error_sql"}';
+		}		
+		else{
+			$password = "pwd|".md5($password);
+			$sql = "UPDATE tbl_usuarios SET password=?, nivel=? WHERE NumEmp = ?";
+			
+			if($result = $this->conn_mysqli->prepare($sql)) {		 
+				if($result->bind_param("ssi", $password, $lst_rol, $id)){
+					if($result->execute()){
+						return '{"tipo":"cliente_update"}';
+					}else
+						return '{"tipo":"error_execute"}';
+				}else
+					return '{"tipo":"error_parametros"}';
+			}else
+				return '{"tipo":"error_sql"}';
+		}
 		$result->close();		
 	}		
 	function activa_adm_usuario($id, $valor){

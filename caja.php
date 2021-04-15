@@ -55,7 +55,7 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
     top: auto;
   }
   </style>
-<script src="js/caja.min.js"></script>
+<script src="js/caja.js"></script>
 <table align="center" width="100%" border="0" id="tbl_buscar_producto">
   <tr>
       <td align="left" width="260" >
@@ -373,3 +373,4 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
 
     </table>
 </div>    
+<input type="hidden" id="txt_focus_caja" value="<?=$_SESSION['txt_focus_caja'];?>"  />

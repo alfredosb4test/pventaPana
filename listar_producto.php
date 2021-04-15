@@ -28,8 +28,10 @@ if($array_prove == 'no_data'){
 				<th width='3%'>Activo</th>
 				<th width='3%'>Borrar</th>
 			</tr>";
-			
+	
+	
 	foreach($array_prove['id'] as $key=>$nombre){
+		$precio_provedor = $array_prove['precio_provedor'][$key];
 		if($_SESSION['g_nivel'] == "admin"){
 			$btn_eliminar = '<img class="producto_borrar hand" id="'.$array_prove['id'][$key].'" valor="1" src="images/borrar.png" width="25" height="25">';
 			if($array_prove['activo'][$key])
@@ -39,6 +41,7 @@ if($array_prove == 'no_data'){
 		}else{
 			$activo="";
 			$btn_eliminar = '';
+			$precio_provedor = 0;
 		}
 		
 		$tabla .= 
@@ -52,7 +55,7 @@ if($array_prove == 'no_data'){
 				<div class="t_cafe" style="position:relative; clear:both;">'.$array_prove['sucursal'][$key].'</div>				
 			</td>
 			<td align="center">'.$array_prove['cantidad'][$key].' '.$array_prove['unidades'][$key].'</td>
-			<td align="center">'.$array_prove['precio_provedor'][$key].'</td>
+			<td align="center">'.$precio_provedor.'</td>
 			<td align="center">'.$array_prove['precio_venta'][$key].'</td>
 			<td align="center">'.$array_prove['precio_mayoreo'][$key].'</td>
 			<td align="center">'.$activo.'</td>
@@ -100,7 +103,7 @@ $(document).ready(function(e) {
 	$("tr:odd").addClass("f_tr_hover");
 	$(".editar_prod").click(function(){
 			$("#txt_editar_prod_ir").attr("value",$(this).attr('id_prod'));
-			//alert($("#txt_editar_prod_ir").val())
+			console.log($("#txt_editar_prod_ir").val())
 			$("#btn_nuevo_prod").click(); // clic en el menu nuevo producto  -> ir_menu('nuevo_producto.php','nuevo_prod');	
 	});
 	

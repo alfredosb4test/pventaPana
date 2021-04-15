@@ -1,5 +1,6 @@
 <?php
 session_start(); 
+echo $nivel = $_SESSION['g_nivel'];
 include('funciones/conexion_class.php');
 $conn = new class_mysqli();
  
@@ -11,7 +12,8 @@ if($array == 'no_data'){
 	$tabla = '<table id="list_usr" class="tbl_datos" border="0" cellpadding="2" cellspacing="0" width="100%">';
 		$tabla .= "
 		 	<tr class='f_negro table_top'>
-				<th width='65%' id='th_ambito' >Usuario</th>
+				<th width='35%' id='th_ambito' >Usuario</th>
+				<th width='30%' >Nivel</th>
 				<th width='30%'>Sucursal</th>
 				<th width='5%'>Activo</th>
 			</tr>";
@@ -28,11 +30,13 @@ if($array == 'no_data'){
 		'<tr class="tbl_fila tr_detalles hand" 
 			id="'.$array['NumEmp'][$key].'"   				
 			nombre="'.$array['Nombre'][$key].'"
+			nivel="'.$array['nivel'][$key].'"
 			sucursal="'.$array['sucursal'][$key].'"
 		 >
 			<td>'.
 				$array['Nombre'][$key]	
 			.'</td>
+			<td>'.$array['nivel'][$key].'</td>
 			<td>'.$array['sucursal'][$key].'</td>
 			<td align="center">'.$activo.'</td>
 		</tr>';
@@ -118,13 +122,23 @@ $(document).ready(function(e) {
 			$("#txt_password").attr("value","");
 			$id = $(this).attr('id');
 			$nombre = $(this).attr('nombre');
+			$nivel = $(this).attr('nivel');
 			//$sucursal = $(this).attr('sucursal');
 
 			$(".cliente_activo, .tr_detalles").unbind("click"); 
 
-		 	//alert($id+'->'+$nombre); return;
+		 	console.log('nivel',$nivel)
 			$("#id").val($id);
 			$("#txt_nombre").val($nombre);
+
+			//$("#lst_rol").attr("selected", "");
+			if( $nivel  == 'admin' )
+				$("#lst_rol option[value='admin']").attr("selected",true);
+			if( $nivel  == 'supervisor' )
+				$("#lst_rol option[value='supervisor']").attr("selected",true);
+			if( $nivel  == 'vendedor' )
+				$("#lst_rol option[value='vendedor']").attr("selected",true);		
+			
 			//$("#txt_ciudad").val($ciudad);
 
 			$("#cont_frm_cliente").appendTo($("#popup_contenido"));
@@ -151,13 +165,13 @@ $(document).ready(function(e) {
 								opacity: true
 							}); // habilita efecto vibrar
 							$codigo=$('#codigo').val();
-							valida_campo2(["txt_password"],'','','',["txt_password"], ["#FF5D00"], ["#E6FACB"]);			
-							if(error){	
-								return;
-							}
+							// valida_campo2(["txt_password"],'','','',["txt_password"], ["#FF5D00"], ["#E6FACB"]);			
+							// if(error){	
+							// 	return;
+							// }
 							//$("#btn_guarda_cliente").hide();
 							var str_post = $("form[name='frm_edit_admin_usuario']").serialize();
-							//alert(str_post); return;
+							// alert(str_post); return;
 							$.ajax({
 							 type: "POST",
 							 contentType: "application/x-www-form-urlencoded", 
@@ -307,7 +321,17 @@ $(document).ready(function(e) {
   <tr>
     <td width="150">Nueva Contraseña:</td>
     <td><input type="text" name="password" id="txt_password" class="text_box" size="15" maxlength="15" value="" ></td>
-  </tr>   
+  </tr> 
+  <tr>
+    <td width="150">Rol:</td>
+    <td>
+		<select id='lst_rol' name='lst_rol' style="width:250px; "  >
+			<option value="admin">Admin</option>
+			<option value="supervisor">Supervisor</option>
+			<option value="vendedor">Vendedor</option>
+		</select>
+	</td>
+  </tr>     
   <tr>
   	<td colspan="2"><div id="ajax_update"></div></td>
   </tr>  

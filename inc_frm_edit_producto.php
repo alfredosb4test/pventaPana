@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <style>
 .ui-dialog {
     overflow: visible;
@@ -591,6 +594,15 @@ $(document).ready(function(){
 	});	
 </script>
 
+
+<?php
+// ocultar precio proveedor en caso de no ser admin
+$class = 'style="display:show;"';
+if( $_SESSION['g_nivel'] != "admin" )
+	$class = 'style="display:none;"';
+
+?>
+
 <div id="cont_registro_producto" style="position:relative; margin-top:-40px; float:left; width:50%;">
 <form>
   <input type="hidden" name="accion" id="accion" value="edit_producto" />
@@ -622,7 +634,7 @@ $(document).ready(function(){
   	<td><input type="text" name="nombre" id="txt_nombre" class="text_box" size="50" maxlength="480" value="<?=$conn->datos_prod['nombre'];?>" ></td>  
   </tr> 
   
-  <tr>
+  <tr <?=$class;?> >
   	<td><label for="textfield">Precio Proveedor: </label></td>
     <td>
         <table border="0">

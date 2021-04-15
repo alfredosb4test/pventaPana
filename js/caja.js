@@ -7,7 +7,7 @@ var $array_precio_prod = [];
 var $existencias_prod=0;  // En devoluciones si no hay existencias que no descuente
 var $aprobacion_card = "";
 var $img = "";
-var $cajaFocus = "#txt_cj_nombre";	// txt_cj_codigo
+var $cajaFocus = "txt_cj_nombre";	// txt_cj_codigo
 var $card = "";
 var $ultimo_codigo_prod = "";
 var $cont_generico = 0;	// lleva un conteo para cada producto generico agregado
@@ -58,6 +58,9 @@ function img_mouseenter(event){
 }
  
 $(document).ready(function(e) {  
+
+	$cajaFocus = $('#txt_focus_caja').val();
+	console.log('cajaFocus = ', $cajaFocus )
 	$altura = $(window).height();
 	$("#ajax_items_add, #btn_productos").css("height",($altura-187));
     $("#txt_cj_codigo, #recibe, #txt_cj_nombre").bind('keydown.ctrl_j', function (evt) { 
@@ -93,7 +96,7 @@ $(document).ready(function(e) {
 
 
 
-	$($cajaFocus).focus();
+	$('#'+$cajaFocus).focus();
 
 	$('#iva').html($iva+"%");
 	$("#f_inicial").datepicker(

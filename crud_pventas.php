@@ -889,7 +889,7 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='ventas_usuario'){
 					$precioUni = $precio / $cantidades[$key] ;
 					if( is_nan($precioUni) )
 						$precioUni = 0;
-					if($_SESSION['g_nivel'] == "vendedor"){
+					if($_SESSION['g_nivel'] == "vendedor" || $_SESSION['g_nivel'] == "supervisor"){
 						$row["total_ganancia"]=0;
 						$ganancias = 0;
 					}
@@ -1896,7 +1896,7 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='edit_adm_usuario'){
 	$conn = new class_mysqli();
 	$_POST = $conn->sanitize($_POST);
 	//echo "ID:".$_POST['correo'];
-	echo $conn->edit_adm_usuario($_POST['id'], $_POST['password']);
+	echo $conn->edit_adm_usuario($_POST['id'], $_POST['password'], $_POST['lst_rol']);
 }
 if(array_key_exists("accion", $_POST) && $_POST['accion']=='activar_desactivar_adm_usuario'){
 	$conn = new class_mysqli();
@@ -1967,6 +1967,28 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='accesos_caja'){
 	$estatus = $_POST['rdo_estatus']; 
 	$_SESSION['accesos_caja'] = $estatus;
 }
+// Focus de caja de texto en caja
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='focus_caja'){	
+	$conn = new class_mysqli();
+	$estatus = $_POST['estatus']; 
+	$id_empresa = $_SESSION['g_id_empresa'];
+	$id_sucursal = $_SESSION['g_id_sucursal'];
+	$sql = "UPDATE tbl_sucursal_datos SET txt_focus_caja ='$estatus' WHERE id_empresa = $id_empresa AND id_sucursal = $id_sucursal"; 
+	
+	if($result = $conn->conn_mysqli->query($sql)){
+		echo '{"status":"ok_update"}';
+	}else{
+		echo '{"status":"no_update"}';
+	}
+}
+// Actualizar la variable txt_focus_caja de $_SESSION 
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='focus_caja_session'){	
+	$conn = new class_mysqli();
+	$estatus = $_POST['rdo_estatus']; 
+	$_SESSION['txt_focus_caja'] = $estatus;
+}
+
+
 if(array_key_exists("accion", $_POST) && $_POST['accion']=='backup'){
 	//echo "backup";
 	$conn = new class_mysqli();

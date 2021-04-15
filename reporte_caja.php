@@ -4,6 +4,7 @@ include('funciones/conexion_class.php');
 $conn = new class_mysqli();
 $activar_cantidades = $_SESSION['activar_cantidades'];
 $activar_accesos = $_SESSION['accesos_caja'];
+$txt_focus_caja = $_SESSION['txt_focus_caja'];
 ?>
 
 
@@ -36,6 +37,10 @@ $(document).ready(function(e) {
 			$( "#f_inicial" ).datepicker( "option", "maxDate", selectedDate );
 		  }
 	});	
+
+	$( "#config" ).click(function() {
+  		$( ".cont_config" ).slideToggle( "fast" );
+	});
 
 	//****************************************************** HISTORIAL VENTAS
 	$( "#btn_filtro, #btn_ventas_realizadas, #btn_pagos_realizados" ).button({ 
@@ -228,10 +233,10 @@ $(document).ready(function(e) {
 				$("#ajax_respuesta").html('Problemas con el servidor intente de nuevo.');
 			}	   
 		});
-	})	
+	});
 
 		// Check Activar Acceos rapidos caja
-		$(".rdo_estatus_accesos").change(function(){		
+	$(".rdo_estatus_accesos").change(function(){		
 		$rdo_estatus = $(".rdo_estatus_accesos:radio[checked='checked']").val();
 		//alert("OK"+$rdo_estatus)					
 		$param = "accion=estatus_accesos&estatus="+$rdo_estatus;
@@ -262,7 +267,40 @@ $(document).ready(function(e) {
 				$("#ajax_respuesta").html('Problemas con el servidor intente de nuevo.');
 			}	   
 		});
-	})	
+	});
+	
+	$(".rdo_cj_cursor").change(function(){		
+		$rdo_estatus = $(".rdo_cj_cursor:radio[checked='checked']").val();
+		//alert("OK"+$rdo_estatus)					
+		$param = "accion=focus_caja&estatus="+$rdo_estatus;
+		
+		if($rdo_estatus == '') return;
+		$.ajax({
+		 type: "POST",
+		 contentType: "application/x-www-form-urlencoded", 
+		 url: 'crud_pventas.php',
+		 data: $param,
+		 beforeSend:function(){ /* $("#ajax_respuesta").html($load); */ },	 
+		 success: function(datos){ 
+		 	
+ 			var obj = jQuery.parseJSON(datos);	
+ 			if(obj.status == "ok_update"){
+				$.post( "crud_pventas.php", { rdo_estatus: $rdo_estatus, accion: "focus_caja_session" })
+				  .done(function( data ) {
+					$("#btn_caja_ventas").click(); // clic en el menu caja 
+				  }); 				
+ 				
+ 			}
+			if(obj.status == "no_update"){
+				 $("#ajax_dvlcion_err").html('<div class="msg alerta_err">Problemas con el SQL</div>');
+			}	 										 							 			
+		 },
+		 timeout:90000,
+		 error: function(){ 					
+				$("#ajax_respuesta").html('Problemas con el servidor intente de nuevo.');
+			}	   
+		});
+	});
 	
 	$("#lst_sucursales").selectmenu({
 		change: function( event, data ) {
@@ -460,45 +498,71 @@ function key_buscar_producto (elEvento, e) {
    
         </div>
     </div>  -->
-
 	<div style="position:relative;float:left;"> 
-	    	<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Activar Cantidades</div> 
-	    	<div class="div_redondo_azul" style="position: relative; width:140px; height:40px;float:left;">
-	            <table>
-	            <tr>                
-	                <td>
-	                <input type="radio" name="rdo_estatus_catidades" class="rdo_estatus_catidades" value="1" 
-	                	<?php echo ($activar_cantidades) ? $check = 'checked="checked"' : ''; ?> />Activo
-	            	</td>
-	            </tr>	                
-	            <tr>                
-	                <td>	                
-	                <input type="radio" name="rdo_estatus_catidades" class="rdo_estatus_catidades" value="0"
-	                	<?php echo (!$activar_cantidades) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
-	            	</td>
-	            </tr>
-	            </table>	            	
-	    	</div>
-	</div> 
-	<div style="position:relative;float:left;"> 
-	    	<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Activar Accesos</div> 
-	    	<div class="div_redondo_azul" style="position: relative; width:140px; height:40px;float:left;">
-	            <table>
-	            <tr>                
-	                <td>
-	                <input type="radio" name="rdo_estatus_accesos" class="rdo_estatus_accesos" value="1" 
-	                	<?php echo ($activar_accesos) ? $check = 'checked="checked"' : ''; ?> />Activo
-	            	</td>
-	            </tr>	                
-	            <tr>                
-	                <td>	                
-	                <input type="radio" name="rdo_estatus_accesos" class="rdo_estatus_accesos" value="0"
-	                	<?php echo (!$activar_accesos) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
-	            	</td>
-	            </tr>
-	            </table>	            	
-	    	</div>
-	</div>    	          
+		<div id="config" style="position:relative; margin: 24px 0 0 10px;background-Color: #CCC; cursor:pointer;"> 
+			<img src="images/config.png" width="35">    
+		</div>
+	</div>                            
+	<div class="cont_config" style="display:none; clear: both;">
+	<br>
+		<div style="position:relative;float:left;"> 
+				<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Activar Cantidades</div> 
+				<div class="div_redondo_azul" style="position: relative; width:140px; height:40px;float:left;">
+					<table>
+					<tr>                
+						<td>
+						<input type="radio" name="rdo_estatus_catidades" class="rdo_estatus_catidades" value="1" 
+							<?php echo ($activar_cantidades) ? $check = 'checked="checked"' : ''; ?> />Activo
+						</td>
+					</tr>	                
+					<tr>                
+						<td>	                
+						<input type="radio" name="rdo_estatus_catidades" class="rdo_estatus_catidades" value="0"
+							<?php echo (!$activar_cantidades) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
+						</td>
+					</tr>
+					</table>	            	
+				</div>
+		</div> 
+		<div style="position:relative;float:left;"> 
+				<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Activar Accesos</div> 
+				<div class="div_redondo_azul" style="position: relative; width:140px; height:40px;float:left;">
+					<table>
+					<tr>                
+						<td>
+						<input type="radio" name="rdo_estatus_accesos" class="rdo_estatus_accesos" value="1" 
+							<?php echo ($activar_accesos) ? $check = 'checked="checked"' : ''; ?> />Activo
+						</td>
+					</tr>	                
+					<tr>                
+						<td>	                
+						<input type="radio" name="rdo_estatus_accesos" class="rdo_estatus_accesos" value="0"
+							<?php echo (!$activar_accesos) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
+						</td>
+					</tr>
+					</table>	            	
+				</div>
+		</div>  
+		<div style="position:relative;float:left;"> 
+				<div class="" style="position: relative; margin: 1px 0 0 10px;  width:180px; " align="center">Cursor Default Caja</div> 
+				<div class="div_redondo_azul" style="position: relative; width:180px; height:40px;float:left;">
+					<table>
+					<tr>                
+						<td>
+						<input type="radio" name="rdo_cj_cursor" class="rdo_cj_cursor" value="txt_cj_nombre" 
+							<?php echo ($txt_focus_caja == 'txt_cj_nombre') ? $check = 'checked="checked"' : ''; ?> />Nombre del Producto
+						</td>
+					</tr>	                
+					<tr>                
+						<td>	                
+						<input type="radio" name="rdo_cj_cursor" class="rdo_cj_cursor" value="txt_cj_codigo"
+							<?php echo ($txt_focus_caja == 'txt_cj_codigo') ? $check = 'checked="checked"' : ''; ?> />Codigo del Producto                
+						</td>
+					</tr>
+					</table>	            	
+				</div>
+		</div>  
+	</div>  	          
 </div>
 <div style="height:30px; position:relative;"></div>
 <div id="ajax_pedidos_usr" style="position: relative; width:99%; height: auto; margin:0 auto; clear:both;"></div>
