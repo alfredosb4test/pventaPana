@@ -13,6 +13,7 @@ var $ultimo_codigo_prod = "";
 var $cont_generico = 0;	// lleva un conteo para cada producto generico agregado
 var $itemRecuperados = false; // si la lista es recuperada  de un pendiente es true
 var $fileItemsPend = ''; // almacena el nombre del archivo de listado pendientes en caja
+var $cantidad_estricta = ''; // almacena "1,0" 1 para cantidades estrictas el sistema no permite cantidad negativa
 function img_mouseenter(event){
 	console.log("event img_mouseenter")
 	$(event).mouseenter(function(e) {
@@ -739,12 +740,14 @@ function buscar_producto($codigo){
 	  //alert(datos);	
 	  if(obj.status == "existe"){
 		  $valor_cantidad = $("#select_cantidad_caja").val();	// cantidad
+		  $cantidad_estricta = $("#txt_cantidad_estricta").val();	// cantidad_estricta si esta en 1 no permite agregar item si no hay existencias
+		 console.log('$cantidad_estricta:', $cantidad_estricta); 
 		  $precio_venta_proveedor = obj.precio_provedor; 		// Precio del producto proveedor
 		  $precio_venta = obj.precio_venta; 					// Precio del producto 
 		  $precio_venta_mayoreo = obj.precio_mayoreo; 			// Precio del producto mayoreo
 		  $cantidadMostrar = 0;									// Muestra la antidad del producto al agregarlo		  
 		  if(obj.activar_cantidades == 1){		  
-			  if(obj.cantidad <= 0){
+			  if(obj.cantidad <= 0 && $cantidad_estricta == 1){
 			  	$("#ajax_items_alert").html('<div class="msg alerta_err">Producto sin existencias</div>');
 				return;
 			  }
@@ -755,7 +758,7 @@ function buscar_producto($codigo){
 			$cantidadMostrar = 0;	
 		  }
 		  //alert(obj.cantidad+"-"+$valor_cantidad);	
-		  if(obj.cantidad < parseInt($valor_cantidad) && obj.activar_cantidades == 1){
+		  if(obj.cantidad < parseInt($valor_cantidad) && obj.activar_cantidades == 1 && $cantidad_estricta == 1){
 		  	$("#ajax_items_alert").html('<div class="msg alerta_err">La cantidad requerida excede al producto existente</div>');
 			return;
 		  }
@@ -965,7 +968,8 @@ function add_cantidad(codigo, cantidadProd){
 	console.log(codigo)
 	console.log(cantidadProd)
 	$cantidad = parseInt($("#textbox_"+codigo).val()) + 1;
-	if( $cantidad > cantidadProd ){
+
+	if( $cantidad > cantidadProd && $cantidad_estricta == 1 ){
 		console.log('cantidad excedida');
 		return;
 	}

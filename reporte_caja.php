@@ -5,6 +5,7 @@ $conn = new class_mysqli();
 $activar_cantidades = $_SESSION['activar_cantidades'];
 $activar_accesos = $_SESSION['accesos_caja'];
 $txt_focus_caja = $_SESSION['txt_focus_caja'];
+$cantidad_estricta = $_SESSION['cantidad_estricta'];
 ?>
 
 
@@ -235,6 +236,40 @@ $(document).ready(function(e) {
 		});
 	});
 
+	
+	// Check Cantidad estricta
+	$(".rdo_cantidad_estricta").change(function(){		
+		$rdo_estatus = $(".rdo_cantidad_estricta:radio[checked='checked']").val();
+		//alert("OK"+$rdo_estatus)					
+		$param = "accion=estatus_cantidad_estricta&estatus="+$rdo_estatus;
+		
+		if($rdo_estatus == '') return;
+		$.ajax({
+		 type: "POST",
+		 contentType: "application/x-www-form-urlencoded", 
+		 url: 'crud_pventas.php',
+		 data: $param,
+		 beforeSend:function(){ /* $("#ajax_respuesta").html($load); */ },	 
+		 success: function(datos){ 
+		 	//alert(datos)
+ 			var obj = jQuery.parseJSON(datos);	
+ 			if(obj.status == "ok_update"){
+				$.post( "crud_pventas.php", { rdo_estatus: $rdo_estatus, accion: "activar_cantidad_estricta" })
+				  .done(function( data ) {
+					$("#btn_caja_ventas").click(); // clic en el menu caja 
+				  }); 				
+ 				
+ 			}
+			if(obj.status == "no_update"){
+				 $("#ajax_dvlcion_err").html('<div class="msg alerta_err">Problemas con el SQL</div>');
+			}	 										 							 			
+		 },
+		 timeout:90000,
+		 error: function(){ 					
+				$("#ajax_respuesta").html('Problemas con el servidor intente de nuevo.');
+			}	   
+		});
+	});
 		// Check Activar Acceos rapidos caja
 	$(".rdo_estatus_accesos").change(function(){		
 		$rdo_estatus = $(".rdo_estatus_accesos:radio[checked='checked']").val();
@@ -505,7 +540,7 @@ function key_buscar_producto (elEvento, e) {
 	</div>                            
 	<div class="cont_config" style="display:none; clear: both;">
 	<br>
-		<div style="position:relative;float:left;"> 
+	<div style="position:relative;float:left;"> 
 				<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Activar Cantidades</div> 
 				<div class="div_redondo_azul" style="position: relative; width:140px; height:40px;float:left;">
 					<table>
@@ -519,6 +554,25 @@ function key_buscar_producto (elEvento, e) {
 						<td>	                
 						<input type="radio" name="rdo_estatus_catidades" class="rdo_estatus_catidades" value="0"
 							<?php echo (!$activar_cantidades) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
+						</td>
+					</tr>
+					</table>	            	
+				</div>
+		</div> 
+		<div style="position:relative;float:left;"> 
+				<div class="" style="position: relative; margin: 1px 0 0 10px;  width:140px; " align="center">Cantidades Estrictas</div> 
+				<div class="div_redondo_azul" style="position: relative; width:140px; height:40px;float:left;">
+					<table>
+					<tr>                
+						<td>
+						<input type="radio" name="rdo_cantidad_estricta" class="rdo_cantidad_estricta" value="1" 
+							<?php echo ($cantidad_estricta) ? $check = 'checked="checked"' : ''; ?> />Activo
+						</td>
+					</tr>	                
+					<tr>                
+						<td>	                
+						<input type="radio" name="rdo_cantidad_estricta" class="rdo_cantidad_estricta" value="0"
+							<?php echo (!$cantidad_estricta) ? $check = 'checked="checked"' : ''; ?> />Desactivado                
 						</td>
 					</tr>
 					</table>	            	

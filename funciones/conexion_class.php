@@ -14,8 +14,8 @@ class class_mysqli{
 	public $mac_address_autorizado="00-13-D3-F3-89-BB"; // lap:0A-00-27-00-00-10 | ale: 00-E0-81-5A-F0-A0
 	private $mysqldump = 'F:\xampp\mysql\bin\mysqldump.exe ';
 	// $this->conn_mysqli->error
-	function __construct($localhost='localhost', $usr='pventa', $pwd='pv3n74*', $db='pventa_almacen'){
-	//function __construct($localhost='localhost', $usr='codig915_pventaA', $pwd='zczs35ky43', $db='codig915_pventa'){	
+	// function __construct($localhost='localhost', $usr='pventa', $pwd='pv3n74*', $db='pventa_almacen'){
+	function __construct($localhost='localhost', $usr='root', $pwd='', $db='pventa_test'){	
 	//function __construct($localhost='localhost', $usr='pastel11_pventa', $pwd='zczs35ky43', $db='pastel11_pventa'){
         $this->localhost = $localhost;
         $this->usuario = $usr;
@@ -93,7 +93,7 @@ class class_mysqli{
 	function getDatos_basicos($idEmpresa, $id_sucursal){
 		$sql = "SELECT tbl_empresa.*, tbl_sucursal.id_sucursal,tbl_sucursal.sucursal, 
 												suc_datos.direccion as suc_dir, suc_datos.tel1 as suc_tel1, suc_datos.tel2 as suc_tel2, 
-												suc_datos.activar_cantidades, suc_datos.accesos_caja, suc_datos.txt_focus_caja
+												suc_datos.activar_cantidades, suc_datos.accesos_caja, suc_datos.txt_focus_caja, suc_datos.cantidad_estricta
 												FROM tbl_empresa, tbl_sucursal, tbl_sucursal_datos as suc_datos 
 												WHERE tbl_sucursal.id_sucursal = $id_sucursal AND 
 												suc_datos.id_sucursal = $id_sucursal AND 
@@ -118,6 +118,7 @@ class class_mysqli{
 							$this->datos_empresa['activar_cantidades']		= $row["activar_cantidades"];
 							$this->datos_empresa['accesos_caja']		= $row["accesos_caja"];
 							$this->datos_empresa['txt_focus_caja']		= $row["txt_focus_caja"];
+							$this->datos_empresa['cantidad_estricta']		= $row["cantidad_estricta"];
 						}	 		
 						return 'existe';						
 					}else

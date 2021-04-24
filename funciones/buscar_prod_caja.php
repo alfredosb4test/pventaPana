@@ -5,7 +5,8 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='cj_buscar_producto')
 	$id_empresa = $_SESSION['g_id_empresa'];
 	$id_sucursal = $_SESSION['g_id_sucursal'];
 	$sql="SELECT * FROM tbl_producto WHERE codigo = '$codigo' AND id_empresa = $id_empresa AND id_sucursal = $id_sucursal AND activo='1' AND visible='1'";
-	$conn = new mysqli('localhost', 'pventa', 'pv3n74*', 'pventa_almacen');
+	//$conn = new mysqli('localhost', 'pventa', 'pv3n74*', 'pventa_almacen');
+	$conn = new mysqli('localhost', 'root', '', 'pventa_test');
 	if($result = $conn->query($sql)) {		 
 				if($result->num_rows){	
 					while ($row = $result->fetch_assoc()) {

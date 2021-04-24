@@ -290,7 +290,8 @@ $(document).ready(function(){
 			  		
 		$("#btn_guarda_producto").hide();
 		var str_post = $("form").serialize();
-		$upfile_1 = $("#upfile_1").val();
+		$upfile_1 = $("#img_prod").attr('nombre_img');
+		//console.log('$upfile_1', $upfile_1); // img_prod
 		if($upfile_1)
 			str_post = str_post +"&upfile_1="+$upfile_1;
 		else	
@@ -533,6 +534,7 @@ $(document).ready(function(){
                 // Agrega archivo a la lista
                 cont_file++
 				$('#img_prod').attr({"src":"img_productos/"+response})
+				$('#img_prod').attr({"nombre_img": response})
                 $('.listaUpFile').append('<span class="uploads_files" id="contFile_'+cont_file+'"><img width="20" height="20" src="images/iconos_documentos/'+extension+'.png" border=0 /><span class="mails_upfiles" id="upfileDis_'+cont_file+'">'+response+'</span><input size="40" type="hidden" id="upfile_'+cont_file+'" name="upfile_'+cont_file+'" value="'+response+'" id_file='+cont_file+' /><span onclick="eliminar(this,\''+response+'\' )" id='+cont_file+' file="'+file+'"><span style="cursor: pointer;"><img src="images/tache.png" border=0 /></span></span></span>');
                 $(".resultadosAjax").empty();
                 //$("#sdi_cont_img").attr("src","images/images_sdi/img_contactos/"+file);
@@ -788,7 +790,7 @@ if( $_SESSION['g_nivel'] != "admin" )
     <tr>
     	<td>
         	<div style="width:300px; height:270px; border:#0066CC solid 1px;" align="center">
-            	<img id="img_prod" src="img_productos/<?=$conn->datos_prod['imagen'];?>" width="270px" height="270px" /> <!--upfile_1-->
+            	<img id="img_prod" nombre_img="<?=$conn->datos_prod['imagen'];?>" src="img_productos/<?=$conn->datos_prod['imagen'];?>" width="270px" height="270px" /> <!--upfile_1-->
             </div>
         </td>
     </tr>

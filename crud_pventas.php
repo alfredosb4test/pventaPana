@@ -1941,12 +1941,35 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='estatus_catidades'){
 		echo '{"status":"no_update"}';
 	}
 }
+
 // Actualizar la variable activar_cantidades de $_SESSION 
 if(array_key_exists("accion", $_POST) && $_POST['accion']=='activar_cantidades'){	
 	$conn = new class_mysqli();
 	$estatus = $_POST['rdo_estatus']; 
 	$_SESSION['activar_cantidades'] = $estatus;
 }
+
+// activar o desactivar estatus_cantidad_estricta
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='estatus_cantidad_estricta'){	
+	$conn = new class_mysqli();
+	$estatus = $_POST['estatus']; 
+	$id_empresa = $_SESSION['g_id_empresa'];
+	$id_sucursal = $_SESSION['g_id_sucursal'];
+	$sql = "UPDATE tbl_sucursal_datos SET cantidad_estricta ='$estatus' WHERE id_empresa = $id_empresa AND id_sucursal = $id_sucursal"; 
+	
+	if($result = $conn->conn_mysqli->query($sql)){
+		echo '{"status":"ok_update"}';
+	}else{
+		echo '{"status":"no_update"}';
+	}
+}
+// Actualizar la variable activar_cantidades de $_SESSION 
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='activar_cantidad_estricta'){	
+	$conn = new class_mysqli();
+	$estatus = $_POST['rdo_estatus']; 
+	$_SESSION['cantidad_estricta'] = $estatus;
+}
+
 // activar o desactivar la vista de iconos de productos en caja
 if(array_key_exists("accion", $_POST) && $_POST['accion']=='estatus_accesos'){	
 	$conn = new class_mysqli();
