@@ -766,7 +766,7 @@ function buscar_producto($codigo){
 		  if ($('#'+obj.codigo).length){
 			  // comprobar la cantidad que ya esta registrada del producto mas la que desea incluir de mas
 			  $cantidad = parseInt($('#textbox_'+obj.codigo).val()) + parseInt($valor_cantidad);
-			  if(obj.cantidad < $cantidad && obj.activar_cantidades == 1){
+			  if(obj.cantidad < $cantidad && obj.activar_cantidades == 1 && $cantidad_estricta == 1){
 				$("#ajax_items_alert").html('<div class="msg alerta_err">La cantidad requerida excede al producto existente</div>');
 				return;
 			  }	
