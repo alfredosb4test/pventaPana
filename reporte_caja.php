@@ -6,6 +6,7 @@ $activar_cantidades = $_SESSION['activar_cantidades'];
 $activar_accesos = $_SESSION['accesos_caja'];
 $txt_focus_caja = $_SESSION['txt_focus_caja'];
 $cantidad_estricta = $_SESSION['cantidad_estricta'];
+// print_r( $_SESSION );
 ?>
 
 

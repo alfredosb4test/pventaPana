@@ -374,4 +374,4 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
     </table>
 </div>    
 <input type="hidden" id="txt_focus_caja" value="<?=$_SESSION['txt_focus_caja'];?>"  />
-<input type="text" id="txt_cantidad_estricta" value="<?=$_SESSION['cantidad_estricta'];?>"  />
+<input type="hidden" id="txt_cantidad_estricta" value="<?=$_SESSION['cantidad_estricta'];?>"  />
