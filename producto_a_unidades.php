@@ -3,7 +3,7 @@ session_start();
 include('funciones/conexion_class.php');
 $conn = new class_mysqli();
 ?> 
-<script src="js/producto_a_unidades_min.js"></script>
+<script src="js/producto_a_unidades.js"></script>
 <div class="f_negro titulo_frm" style="position: fixed; width:100%; z-index:20">
   <div style="position:relative; top:7px;">Producto a Unidades</div>  
 </div> 
@@ -37,7 +37,7 @@ $conn = new class_mysqli();
             <td>
                 <select name="select_cantidad" id="select_cantidad" style="width:80px; ">
                 <?php
-                    for($x=8;$x<=10; $x++){
+                    for($x=1;$x<=1000; $x++){
                         echo "<option>$x</option>";
                     }
                 ?> 
@@ -67,7 +67,11 @@ $conn = new class_mysqli();
     </div>
 </div>
 
-
+<style>
+    .overflow {
+      height: 200px;
+    }
+  </style>
 
 
 

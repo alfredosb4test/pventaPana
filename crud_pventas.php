@@ -977,6 +977,175 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='ventas_usuario'){
 	}
 }
 /************************************************************************************************************************************/
+/***********************************************    CORTE CAJA VENTA DEL DIA   ******************************************************/
+/************************************************************************************************************************************/
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='corte_caja_dia'){	
+	$conn = new class_mysqli();
+	$id = $_POST['id'];
+	if($_POST['fecha'])
+		$fecha = $_POST['fecha'];
+	else
+		$fecha = date("Y-m-d");
+
+	if($_POST['fecha2'])
+		$fecha2 = $_POST['fecha2'];
+	else
+		$fecha2 = date("Y-m-d");
+		
+				
+	//$sql = "SELECT * FROM `tbl_ventas_caja` WHERE DATE_FORMAT(fecha,'%d')=DAY(NOW()) AND NumEmp = ".$_SESSION['g_NumEmp']." ORDER BY fecha DESC";
+		$sql = "SELECT *, DATE_FORMAT(fecha, '%m') AS mes1,DATE_FORMAT(fecha, '%d') AS dia1,DATE_FORMAT(fecha, '%Y') AS anio1,DATE_FORMAT(fecha, '%h:%i %p') AS hrs1 
+				FROM `tbl_ventas_caja` WHERE DATE_FORMAT(fecha,'%Y-%m-%d') BETWEEN '$fecha' AND '$fecha2' AND NumEmp = ".$_SESSION['g_NumEmp']." ORDER BY fecha DESC";
+	
+	if($_SESSION['g_nivel'] == "admin")
+		$sql = "SELECT *, DATE_FORMAT(fecha, '%m') AS mes1,DATE_FORMAT(fecha, '%d') AS dia1,DATE_FORMAT(fecha, '%Y') AS anio1,DATE_FORMAT(fecha, '%h:%i %p') AS hrs1
+			    FROM `tbl_ventas_caja` WHERE DATE_FORMAT(fecha,'%Y-%m-%d') BETWEEN '$fecha' AND '$fecha2' AND id_empresa = ".$_SESSION['g_id_empresa']." ORDER BY fecha DESC";
+ 
+	//echo "$sql <hr>";		// AND id_productos IN (1236)
+	$tabla_xls = '';
+	if($result = $conn->conn_mysqli->query($sql)){
+		if($result->num_rows){	
+ 
+			$con = 0;
+			while ($row = $result->fetch_assoc()) {
+				if( $row["id_productos"] == '')
+					continue;
+ 
+				$con++;
+
+				$row["mes1"] = $conn->damemes($row["mes1"]);
+				$row["fecha"] = '<span class="t_italic">'.$row["dia1"].' de '.$row["mes1"].' del '.$row["anio1"].' '.$row["hrs1"].'</span>';				
+				$array_id_prod = explode(",",$row["id_productos"]);
+				$cantidades = explode(",",$row["cantidades"]);
+				$precios = explode(",",$row["precios"]);
+				$nombre_genericos = $row["nombre_genericos"];
+				$folio = sprintf("%07s",  $row["id_ventas_cajas"]);
+				$total_x_dia = $total_x_dia+$row["total"];
+				$ganancias = explode(",",$row["ganancias"]);
+				$total_ganancia_x_dia = $total_ganancia_x_dia+$row["total_ganancia"];
+				$card = $row["card"];
+
+				// Datos Para el Ticket
+				$array_id = implode(",",$array_id_prod);
+				$array_cantidad_solicitada = implode(",",$cantidades);
+				$array_precio_prod = implode(",",$precios);
+				$urlTicket="ticket_html.php?folio=".$folio."&array_id=".$array_id."&array_cantidad_solicitada=".$array_cantidad_solicitada.
+				"&array_precio_prod=".$array_precio_prod."&total=".$total_x_dia."&nombre_cajero=".$row["nombre_empleado"];
+
+				if($card != "")
+					$tipo_pago = 'Pago con Tarjeta  
+									<img src="images/t_'.$card.'.png" height="22" width="28" style="position: relative; margin-top:0px">
+								   , 
+								  aprobacion: <span class="negritas t_negro">'.$row["aprobacion_card"].'</span>';
+				else
+					$tipo_pago = '<span class="negritas t_negro">Pago en Efectivo</span>';	
+				
+
+ 
+				//print_r($precios);					  
+				foreach($array_id_prod as $key => $valor){
+					// si los id_productos contienes claves genericas (-n) se buscaran los nombres 
+					// en el JSON del campo nombre_genericos 
+					if(stripos($valor, "-")){						
+						$id_generico = explode("-", $valor);
+						$valor = $id_generico[1];
+						
+						$array_JSON = json_decode($nombre_genericos);
+						//print_r($array_JSON);
+						foreach ($array_JSON as $key1 => $obj1) { 
+							//echo  " <br> $valor | $key ".$obj1->nom;
+							if ($valor == $obj1->id) {	// elimina elemento		 	 
+								$row_prod['nombre'] = "<span class='f_blanco t_rojo negritas'> &raquo;</span>Generico - ".$obj1->nom;
+								$row_prod['id'] = '1433-'.$valor;
+							}
+						}							 				
+					}else{
+						$sql = "SELECT id,nombre FROM `tbl_producto` WHERE id = ".$valor; 
+						$result_prod = $conn->conn_mysqli->query($sql);
+						$row_prod = $result_prod->fetch_assoc();
+					}
+					//echo "<br>Nom::".$row_prod['nombre'];
+ 
+					$precio = str_replace('$','',$precios[$key]);
+					$precioUni = $precio / $cantidades[$key] ;
+					if( is_nan($precioUni) )
+						$precioUni = 0;
+					if($_SESSION['g_nivel'] == "vendedor" || $_SESSION['g_nivel'] == "supervisor"){
+						$row["total_ganancia"]=0;
+						$ganancias = 0;
+					}
+				}
+											
+				$row["total"] = number_format($row["total"],2);
+				$row["total_ganancia"] = number_format($row["total_ganancia"],2);
+			}
+			$total_x_dia = number_format($total_x_dia,2);
+ 
+			echo $total_x_dia;	// .$tabla_xls
+		}else{
+			echo 0;
+		}
+	}
+}
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='denominaciones'){
+	$conn = new class_mysqli();
+	$sql = 'SELECT * FROM tbl_denominaciones';
+	if($result = $conn->conn_mysqli->query($sql)){
+		if($result->num_rows){	
+			while($row = mysqli_fetch_array($result)) $array[] = $row;
+		}
+		echo json_encode($array);
+	}
+}
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='guarda_denominaciones'){
+	$conn = new class_mysqli();
+	$denominaciones = json_decode($_POST['denominaciones']); 
+
+	$keys = '';
+	$sql = "UPDATE tbl_denominaciones SET cantidad = CASE denominacion "; 
+	foreach ($denominaciones as $key => $cantidad) {   
+		$keys .= "'".$key."',";
+		$sql .= sprintf("WHEN %s THEN %d ", "'".$key."'", $cantidad); 
+	} 
+	$keys = rtrim($keys,',');
+	$sql .= "END WHERE denominacion IN ($keys)";   
+ 
+	$conn->conn_mysqli->autocommit(FALSE);
+	if($result = $conn->conn_mysqli->query($sql)){
+		echo '{"status":"ok_update"}';
+		$conn->conn_mysqli->commit();
+	}else{
+		echo '{"status":"no_update"}';				
+		$conn->conn_mysqli->rollback();
+		$conn->conn_mysqli->autocommit(TRUE);
+		exit;
+	}
+	$conn->conn_mysqli->autocommit(TRUE);
+
+}
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='ingreso'){
+	$conn = new class_mysqli();
+	$sql = "SELECT * FROM tbl_salida_entrada_caja WHERE concepto = 'ingreso' AND fecha >= CURRENT_DATE()";
+	if($result = $conn->conn_mysqli->query($sql)){
+		if($result->num_rows)
+			while($row = mysqli_fetch_array($result)) $array[] = $row;
+		else
+			$array = 0;
+		echo json_encode($array);
+	}
+}
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='retiro'){
+	$conn = new class_mysqli();
+	$sql = "SELECT * FROM tbl_salida_entrada_caja WHERE concepto = 'retiro' AND fecha >= CURRENT_DATE()";
+	if($result = $conn->conn_mysqli->query($sql)){
+		if($result->num_rows)
+			while($row = mysqli_fetch_array($result)) $array[] = $row;
+		else
+			$array = 0;
+		echo json_encode($array);
+	}
+}
+/************************************************************************************************************************************/
 /***********************************************    REPORTE DE VENTAS X PRODUCTO  *************************************************************/
 /************************************************************************************************************************************/
 if(array_key_exists("accion", $_POST) && $_POST['accion']=='ventas_usuario_x_prod'){	

@@ -66,7 +66,9 @@ $(document).ready(function(e)
 				return;
 		}
 	});
-	$("#select_cantidad").selectmenu({});
+	$("#select_cantidad").selectmenu()
+	.selectmenu( "menuWidget" )
+	  .addClass( "overflow" );
 });
 function limpiar_datos_insert(){
 			$("#tr_cantidad").hide();
@@ -126,7 +128,7 @@ function buscar_producto($codigo){
 		  $('#text_nombre_prod').attr('id_codigo_unidades',obj.id_codigo_unidades);		// id del producto al q se le sumen las unidades
 		  
 		  /****************************  Ocultar Combo y boton para convertir manual  ***********************************************/
-		  //$('#tr_cantidad').slideDown();	// oculta el combo q contiene la cantidad a dividir ya q por default sera 8 
+		  $('#tr_cantidad').slideDown();	// oculta el combo q contiene la cantidad a dividir ya q por default sera 8 
 		  /***************************************************************************************************************************/
 		  
 		  $("#txt_cj_codigo").attr('value','').focus();
