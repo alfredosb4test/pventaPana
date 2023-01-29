@@ -791,11 +791,11 @@ background-color: #71B8D7;
 	position:relative;
 	float:left;
 	height:18px;
+	
+	
 	padding:0 2px 0 2px;
 }
-.tr_gris{
-	background-color: #eeffdc;
-}
+
 .con_t_th{
 	position: fixed;
  	height:37px;

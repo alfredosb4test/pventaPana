@@ -34,7 +34,7 @@ $conn = new class_mysqli();
 <script src="js/jquery.jrumble.1.3.min.js"></script>  
 <script src="js/jquery.hotkeys.js"></script>  
 <script src="js/jquery.blockUI.js "></script>
-<script src="js/index_min.js"></script>
+<script src="js/index.js"></script>
  
 <script src="js/jquery.table2excel.min.js"></script>
 

@@ -130,7 +130,7 @@ $(document).ready(function(e)
             beforeSend:function(){ /* $("#ajax_respuesta").html($load); */ },	 
             success: function(datos){
                 try{
-                    
+                    console.log(datos);
                     var obj = jQuery.parseJSON(datos);	 
                     if(obj.status == "ok_update"){
                         $("#resultados_guardar_deno").html('<div class="msg alerta_ok t_verde_fuerte">Datos guardados.</div>');

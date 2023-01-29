@@ -76,7 +76,7 @@ $(document).ready(function(e) {
 		 data: "accion=valida_usr&pwd="+$pwd,
 		 beforeSend:function(){  },	   
 		 success: function(data){
-			//alert(data);
+			console.log(data);
 			//$("#login-box").html(data);
 			//return;
 			var obj = jQuery.parseJSON(data);	

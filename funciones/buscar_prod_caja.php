@@ -5,7 +5,7 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='cj_buscar_producto')
 	$id_empresa = $_SESSION['g_id_empresa'];
 	$id_sucursal = $_SESSION['g_id_sucursal'];
 	$sql="SELECT * FROM tbl_producto WHERE codigo = '$codigo' AND id_empresa = $id_empresa AND id_sucursal = $id_sucursal AND activo='1' AND visible='1'";
-	$conn = new mysqli('localhost', 'pventa', 'pv3n74*', 'pventa_almacen');
+	$conn = new mysqli('localhost', 'root', '', 'pventa_almacen');
 	// $conn = new mysqli('localhost', 'root', '', 'pventa_test');
 	if($result = $conn->query($sql)) {		 
 				if($result->num_rows){	
@@ -36,5 +36,28 @@ if(array_key_exists("accion", $_POST) && $_POST['accion']=='cj_buscar_producto')
 		echo '{"status":"error_sql"}';
 	$result->close();				
 }
+
+if(array_key_exists("accion", $_POST) && $_POST['accion']=='cj_buscar_monografia'){		
+	$codigo = trim($_POST['codigo']); 
+	$sql="SELECT * FROM tbl_monografias WHERE id = '$codigo'  ";
+	$conn = new mysqli('localhost', 'root', '', 'pventa_almacen');
+	// $conn = new mysqli('localhost', 'root', '', 'pventa_test');
+	if($result = $conn->query($sql)) {		 
+				if($result->num_rows){	
+					while ($row = $result->fetch_assoc()) {
+					  	$activar_cantidades = $_SESSION['activar_cantidades'];
+					  	echo '{
+						  	"status":"existe",
+						  	"id":"'.$row['id'].'", 
+								"nombre":"'.$row['nombre'].'", 
+								"existencia":"'.$row['existencia'].'"}';	
+					}	
+				}else
+					echo '{"status":"no_existe"}';
+	}else
+		echo '{"status":"error_sql"}';
+	$result->close();				
+}
+
 $conn->close();
 ?>

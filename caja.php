@@ -54,6 +54,23 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
     bottom: -20px;
     top: auto;
   }
+   /* mostrar la lista de resultados del buscador delante el dialog */
+   ul.ui-autocomplete {
+      z-index: 1100;
+   }
+   /* Mostrar el resultado de la busqueda con scroll vertical */
+   .ui-autocomplete {
+    max-height: 300px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
+  /* IE 6 doesn't support max-height
+   * we use height instead, but this forces the menu to always be this tall
+   */
+  * html .ui-autocomplete {
+    height: 100px;
+  }
   </style>
 <script src="js/caja.js"></script>
 <table align="center" width="100%" border="0" id="tbl_buscar_producto">
@@ -177,7 +194,12 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
                 	<div class="button_azul" id="btn_guardar_list" style="width:70px; font-size:12px">
                     	<div style="padding-top:20px; width:70px;">Indexar</div>
                 	</div>                 
-                </td>                    
+                </td> 
+                <td width="70"> 
+                	<div class="button_azul" id="btn_monog_list" style="width:70px; font-size:12px">
+                    	<div style="padding-top:20px; width:70px;">Monog</div>
+                	</div>                 
+                </td>                   
             	<td width="70"> 
                 	<div class="button_azul hide" id="btn_dvlcion" style="width:70px; font-size:12px">
                     	<div style="padding-top:20px; width:70px;">Dvlcion</div>
@@ -372,6 +394,23 @@ $accesos_rapidos = $conn->get_accesos_rapidos( $_SESSION['g_id_empresa'], $_SESS
         </tr>
 
     </table>
-</div>    
+</div>  
+<!-- *************************** Buscar Monografia *************************** -->
+<div id="dialog_monog" style="width:1300px; display:none">
+	<table width="99%" border="0">
+      <tr>
+         <td align="left" width="260">
+            <input class="text_box" id="txt_cj_monog" type="text" placeholder="Buscar" style="width:250px;" required>
+            <button type="button" onclick="buscar_producto('monografias'); $( '#dialog_monog' ).dialog( 'close' );" id="btn_addMonografia" style="display:none">
+               Agregar monografia al listado
+            </button>
+         </td> 
+         
+      </tr>
+      <tr>
+         <td class="statusMonografia"></td>
+      </tr>
+    </table>    
+</div>   
 <input type="hidden" id="txt_focus_caja" value="<?=$_SESSION['txt_focus_caja'];?>"  />
 <input type="hidden" id="txt_cantidad_estricta" value="<?=$_SESSION['cantidad_estricta'];?>"  />

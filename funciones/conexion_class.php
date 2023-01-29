@@ -14,14 +14,14 @@ class class_mysqli{
 	public $mac_address_autorizado="00-13-D3-F3-89-BB"; // lap:0A-00-27-00-00-10 | ale: 00-E0-81-5A-F0-A0
 	private $mysqldump = 'F:\xampp\mysql\bin\mysqldump.exe ';
 	// $this->conn_mysqli->error
-	function __construct($localhost='localhost', $usr='pventa', $pwd='pv3n74*', $db='pventa_almacen'){
-	// function __construct($localhost='localhost', $usr='root', $pwd='', $db='pventa_test'){	
+	// function __construct($localhost='localhost', $usr='pventa', $pwd='pv3n74*', $db='pventa_almacen'){
+	function __construct($localhost='localhost', $usr='root', $pwd='', $db='pventa_almacen'){
 	//function __construct($localhost='localhost', $usr='pastel11_pventa', $pwd='zczs35ky43', $db='pastel11_pventa'){
         $this->localhost = $localhost;
         $this->usuario = $usr;
         $this->pwd = $pwd;
         $this->bd = $db;			
-		ini_set('error_reporting', 0);		
+		ini_set('error_reporting', 1);		
 		$this->open_mysqli();	
 	}
 	function open_mysqli(){

@@ -230,6 +230,33 @@ if(array_key_exists("accion", $_REQUEST) && $_REQUEST['accion'] == 'autocompleta
 	}
 }
 
+if(array_key_exists("accion", $_REQUEST) && $_REQUEST['accion'] == 'autocompleta_monografia'){ 
+
+	$buscar_empresa = $_REQUEST['term'];
+	$items[] = array();//creamos un array llamado items			
+	$sql="SELECT * FROM tbl_monografias  WHERE nombre like '%".$buscar_empresa."%' ";	
+
+	//si no hay registros retornamos
+	$conn = new class_mysqli();
+	if ($result = $conn->conn_mysqli->query($sql)) {			
+		$i=0; //creo una variable del tipo entero
+		while ($row = $result->fetch_assoc()) {
+			$i++;
+			$id = '{"id":"OK",';
+			$label = '"label":"'.str_replace('"', "'", $row["nombre"]).'",';
+			$imagen = '"id":"'.str_replace('"', "'", $row["id"]).'",';
+			$value = '"value":" "}';
+			$json_completo .= $id
+			.$imagen
+			.$label
+			.$value.',';	
+		}
+		$json_completo =  "[".rtrim($json_completo, " ,")."]";
+		echo $json_completo;
+		$conn->close_mysqli();
+	}
+}
+
 if(array_key_exists("accion", $_REQUEST) && $_REQUEST['accion'] == 'autocompleta_cliente'){ 
 
 	$buscar_empresa = $_REQUEST['term'];

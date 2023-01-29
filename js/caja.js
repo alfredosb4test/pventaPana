@@ -61,7 +61,7 @@ function img_mouseenter(event){
 $(document).ready(function(e) {  
 
 	$cajaFocus = $('#txt_focus_caja').val();
-	console.log('cajaFocus = ', $cajaFocus )
+	 
 	$altura = $(window).height();
 	$("#ajax_items_add, #btn_productos").css("height",($altura-187));
     $("#txt_cj_codigo, #recibe, #txt_cj_nombre").bind('keydown.ctrl_j', function (evt) { 
@@ -90,6 +90,13 @@ $(document).ready(function(e) {
 							del_cantidad($ultimo_codigo_prod); 
     	}
 	});
+	// Agregar estilos al boton agregar monografia
+	$( "#btn_addMonografia" ).button({ 
+		text: true,
+		icons: {
+		  primary: "ui-icon-plusthick"
+		}
+  });	
 	
 	filePendiente();
 	
@@ -161,6 +168,16 @@ $(document).ready(function(e) {
 		    $('#txt_cj_nombre').attr('value','').focus();						
 		},
 	});	
+	$("#txt_cj_monog").autocomplete({
+		source: "crud_pventas.php?accion=autocompleta_monografia",			
+		//appendTo: '#menu-container',
+		minLength: 3,						
+		select: function (event, ui) {				
+			buscar_monografia(ui.item.id);
+		    $('#txt_cj_monog').attr('value','').focus();						
+		},
+	});	
+	
 	/*********************************** Aplicar Mayoreo ******************************************/
 	$("#btn_maayoreo").toggle(
 		function(){
@@ -185,10 +202,8 @@ $(document).ready(function(e) {
 	//URL="ticket_html.php?array_id="+$array_id+"&array_cantidad_solicitada="+$array_cantidad_solicitada;
 	window.open(URL, "_blank", "toolbar=yes, scrollbars=yes, resizable=yes, top=1, left=100, width=800, height=600");
 	//eval("page" + id + " = window.open(URL, '" + id + "','toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=1,resizable=1,width=700,height=600');");		
-	});
-	
-	
-	
+	}); 
+
 	// Retiro o Entrada de DINERO
 	$('#btn_caja_pago').click(function(){			
 			$("#txt_catidad_retiro").addClass('text_box');
@@ -683,6 +698,61 @@ $(document).ready(function(e) {
 		}
 	});
 
+	//************************************************************ Guardar pendientes, lista de productos
+	$('#btn_guardar_list').click(function(){
+		var productos = '';
+		if ($('.item').length){
+			//$hijos = $("#ajax_items_add").children('div').html();
+			//console.log( $(this) );
+			$(".item").each(function( cont ) {
+				productos += $(this).context.outerHTML;				
+			});
+			f = new Date();	
+			fecha = f.getDate() + "-" + (f.getMonth() +1) + "-" + f.getFullYear() + "_" + f.getHours() + "$" + f.getMinutes();
+			//productos.push( fecha );
+			$.ajax({ 
+				url: 'crud_pventas.php', // Url to which the request is send 
+				contentType: "application/x-www-form-urlencoded", 
+				type: "POST",    // Type of request to be send, called as method 
+				data: "accion=fileCaja&tmpCaja=" + productos+"&fecha="+fecha, // Data sent to server, a set of key/value pairs (i.e. form fields and values) 
+				processData:false,  // To send DOMDocument or non processed data file it is set to false 
+
+				}).done(function(data) { 
+					console.log('btn_guardar_list -> archivo guardado'); 
+					$(".item").fadeOut('fast');
+					setTimeout(()=>{ $("#ajax_items_add").empty(); },1000);
+					
+					filePendiente();
+				});
+		}
+	});
+
+	//************************************************************ Buscar Monografia
+	$('#btn_monog_list').click(function(){
+		//$("#ajax_generico, #ajax_generico_err").empty();
+
+		$("#dialog_monog").dialog({
+			width: 550,
+			resizable: false,
+			show: { effect: "blind", pieces: 8, duration: 10 },
+			position: { my: "center top", at: "center top+55"  },
+			title: "Buscar Monografia",
+			close: function( event, ui ) {  
+					$($cajaFocus).focus();	
+					$("#txt_cj_monog").addClass('text_box');
+					$(".statusMonografia").empty();
+					$('#btn_addMonografia').hide();
+				},
+			buttons: {					  
+				Cerrar: function() {
+					$("#txt_cj_monog").val("");
+					$( this ).dialog( "close" );
+				}, 		  
+			}
+		});	
+	}); 
+
+
 });	
 
 /******************************** Calcula el cambio ********************************************/
@@ -733,11 +803,12 @@ function buscar_producto($codigo){
    beforeSend:function(){/* $("#ajax_respuesta").html($load); */},	 
    success: function(datos){ 
    	  //alert(datos)
+		 console.log("prod::",datos);	
 	  $('#txt_cj_codigo').attr("value","");	
 	  $('#txt_cj_nombre').attr('value','');	   
 	  var obj = jQuery.parseJSON(datos);	
 	  $("#ajax_respuesta").empty();	
-	  //alert(datos);	
+	  
 	  if(obj.status == "existe"){
 		  $valor_cantidad = $("#select_cantidad_caja").val();	// cantidad
 		  $cantidad_estricta = $("#txt_cantidad_estricta").val();	// cantidad_estricta si esta en 1 no permite agregar item si no hay existencias
@@ -852,6 +923,40 @@ function buscar_producto($codigo){
 		  $ultimo_codigo_prod = obj.codigo;
 		  calcular_totales();  	
 		  $('.thumbnail-item').click(); // click para activar la vista imagen *parche		
+	  }
+	  if(obj.status == "no_existe"){
+		  $("#ajax_items_alert").html('<div class="msg alerta_err">Producto no existente</div>');
+	  }		 			  
+	  if(obj.status == "error_sql"){
+		  $("#ajax_items_alert").html('<div class="msg alerta_err">Problemas con el SQL</div>');
+	  } 	
+   },
+   timeout:90000,
+   error: function(){ 					
+		  $("#ajax_respuesta").html('<div class="msg alerta_err">Problemas con el Servidor</div>');
+	  }	   
+  });	
+}
+function buscar_monografia($codigo){	
+  $.ajax({
+   type: "POST",
+   contentType: "application/x-www-form-urlencoded", 
+   url: "funciones/buscar_prod_caja.php",
+   data: "accion=cj_buscar_monografia&codigo="+$codigo,
+   beforeSend:function(){/* $("#ajax_respuesta").html($load); */},	 
+   success: function(datos){   
+	  $('#txt_cj_monog').attr("value","");
+	  var obj = jQuery.parseJSON(datos);	
+	  $("#ajax_respuesta").empty();	
+	  
+	  if(obj.status == "existe"){
+			if( obj.existencia == 1 ){
+				$('.statusMonografia').html('<div class="msg alerta_ok">Producto existente</div><br>' + obj.nombre );
+				$('#btn_addMonografia').fadeIn('fast');
+			}else{
+				$(".statusMonografia").html('<div class="msg alerta_err">Producto no existente</div>');
+				$('#btn_addMonografia').fadeOut('fast');
+			}	
 	  }
 	  if(obj.status == "no_existe"){
 		  $("#ajax_items_alert").html('<div class="msg alerta_err">Producto no existente</div>');
@@ -1183,34 +1288,6 @@ function actualiza_deben($id, $estatus){
 	});
 }
 
-//************************************************************ Guardar pendientes, lista de productos
-$('#btn_guardar_list').click(function(){
-	var productos = '';
-	if ($('.item').length){
-		//$hijos = $("#ajax_items_add").children('div').html();
-		//console.log( $(this) );
-		$(".item").each(function( cont ) {
-			productos += $(this).context.outerHTML;				
-		});
-		f = new Date();	
-		fecha = f.getDate() + "-" + (f.getMonth() +1) + "-" + f.getFullYear() + "_" + f.getHours() + "$" + f.getMinutes();
-		//productos.push( fecha );
-		$.ajax({ 
-			url: 'crud_pventas.php', // Url to which the request is send 
-			contentType: "application/x-www-form-urlencoded", 
-			type: "POST",    // Type of request to be send, called as method 
-			data: "accion=fileCaja&tmpCaja=" + productos+"&fecha="+fecha, // Data sent to server, a set of key/value pairs (i.e. form fields and values) 
-			processData:false,  // To send DOMDocument or non processed data file it is set to false 
-
-			}).done(function(data) { 
-				console.log('btn_guardar_list -> archivo guardado'); 
-				$(".item").fadeOut('fast');
-				setTimeout(()=>{ $("#ajax_items_add").empty(); },1000);
-				
-				filePendiente();
-			});
-	}
-});
 //*********************************************** Recuperar pendientes, lista de productos mostralos en tabs
 function filePendiente(){
 	$.ajax({
